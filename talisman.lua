@@ -134,3 +134,31 @@ function G.FUNCS.text_super_juice(e, _amount)
   if _amount > 2 then _amount = 2 end
   return tsj(e, _amount)
 end
+
+local max = math.max
+function math.max(x, y)
+  if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
+    x = Big:new(x)
+    y = Big:new(y)
+    if (x > y) then
+      return x
+    else
+      return y
+    end
+  end
+  return max(x,y)
+end
+
+local min = math.min
+function math.min(x, y)
+  if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
+    x = Big:new(x)
+    y = Big:new(y)
+    if (x < y) then
+      return x
+    else
+      return y
+    end
+  end
+  return min(x,y)
+end
