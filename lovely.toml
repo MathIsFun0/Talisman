@@ -1,0 +1,273 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.copy]
+target = "main.lua"
+position = "append"
+sources = [
+	"talisman.lua"
+]
+
+# Use formatted numbers for poker hand scores
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "{n=G.UIT.T, config={text = G.GAME.hands[handname].chips, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},"
+position = "at"
+payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].chips), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "{n=G.UIT.T, config={text = G.GAME.hands[handname].mult, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}"
+position = "at"
+payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].mult), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}"
+match_indent = true
+overwrite = true
+
+# Chip requirements for achievements
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.type == 'chip_score' then"
+position = "at"
+payload = "if args.type == 'chip_score' and type(args.chips) == 'table' then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.chips >= 10000 then"
+position = "at"
+payload = "if args.chips >= Big:new(10000) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.chips >= 1000000 then"
+position = "at"
+payload = "if args.chips >= Big:new(1000000) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.chips >= 100000000 then"
+position = "at"
+payload = "if args.chips >= Big:new(100000000) then"
+match_indent = true
+overwrite = true
+
+# More comparison issues
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "if hand_chips*mult > 0 then"
+position = "at"
+payload = "if hand_chips*mult > Big:new(0) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if G.GAME.current_round.current_hand.chip_total < 1 then"
+position = "at"
+payload = "if Big:new(G.GAME.current_round.current_hand.chip_total) < Big:new(1) then"
+match_indent = true
+overwrite = true
+
+# Patch for Steamodded Sound API
+[[patches]]
+[patches.pattern]
+target = "main.lua"
+pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+position = "at"
+payload = "G.ARGS.score_intensity.organ = G.video_organ or Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+position = "at"
+payload = "G.ARGS.score_intensity.organ = G.video_organ or Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then"
+position = "at"
+payload = "if Big:new(G.ARGS.score_intensity.earned_score) >= Big:new(G.ARGS.score_intensity.required_score) and Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then"
+position = "at"
+payload = '''print(Big:new(G.GAME.chips):to_string())
+print(Big:new(G.GAME.blind.chips):to_string())
+if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then'''
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "if G.GAME.chips - G.GAME.blind.chips >= 0 then"
+position = "at"
+payload = "if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = "if self.boss and G.GAME.chips - G.GAME.blind.chips >= 0 then"
+position = "at"
+payload = "if self.boss and Big:new(G.GAME.chips) - G.GAME.blind.chips >= Big:new(0) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "G.GAME.chips/G.GAME.blind.chips >= 0.25 then"
+position = "at"
+payload = "Big:new(G.GAME.chips)/G.GAME.blind.chips >= Big:new(0.25) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.mult) == 'number' and G.GAME.current_round.current_hand.mult or 1)))) end"
+position = "at"
+payload = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.mult) and G.GAME.current_round.current_hand.mult or 1))))) end"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.max(0,math.floor(math.log10(type(G.GAME.current_round.current_hand.chips) == 'number' and G.GAME.current_round.current_hand.chips or 1)))) end"
+position = "at"
+payload = "if not G.TAROT_INTERRUPT_PULSE then G.FUNCS.text_super_juice(e, math.min(2,math.max(0,math.floor(math.log10(is_number(G.GAME.current_round.current_hand.chips) and G.GAME.current_round.current_hand.chips or 1))))) end"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then"
+position = "at"
+payload = "if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "main.lua"
+pattern = "if type(G.GAME.current_round.current_hand.chips) ~= 'number' or type(G.GAME.current_round.current_hand.mult) ~= 'number' then"
+position = "at"
+payload = "if not is_number(G.GAME.current_round.current_hand.chips) or not is_number(G.GAME.current_round.current_hand.mult) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "local delta = (type(vals.chips) == 'number' and type(G.GAME.current_round.current_hand.chips) == 'number') and (vals.chips - G.GAME.current_round.current_hand.chips) or 0"
+position = "at"
+payload = "local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (vals.chips - G.GAME.current_round.current_hand.chips) or 0"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "local delta = (type(vals.mult) == 'number' and type(G.GAME.current_round.current_hand.mult) == 'number')and (vals.mult - G.GAME.current_round.current_hand.mult) or 0"
+position = "at"
+payload = "local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (vals.mult - G.GAME.current_round.current_hand.mult) or 0"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if delta < 0 then delta = ''..delta; col = G.C.RED"
+position = "at"
+payload = "if Big:new(delta) < Big:new(0) then delta = Big:new(delta):to_string(); col = G.C.RED"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "elseif delta > 0 then delta = '+'..delta"
+position = "at"
+payload = "elseif Big:new(delta) > Big:new(0) then delta = '+'..Big:new(delta):to_string()"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "else delta = ''..delta"
+position = "at"
+payload = "else delta = Big:new(delta):to_string()"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "engine/string_packer.lua"
+pattern = 'if type_v == "table" then'
+position = "after"
+payload = '''
+if v.m and v.e then
+v = "Big:new("..v.m..","..v.e..")"
+'''
+match_indent = true
+overwrite = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/string_packer.lua"
+pattern = 'if v.is and v:is(Object) then'
+position = "at"
+payload = 'elseif v.is and v:is(Object) then'
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "main.lua"
+pattern = 'setfenv(chunk, {})  -- Use an empty environment to prevent access to potentially harmful functions'
+position = "at"
+payload = 'setfenv(chunk, {Big = Big, BigMeta = BigMeta})  -- Use an empty environment to prevent access to potentially harmful functions... except for our large numbers'
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "{n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.GAME.round_resets, ref_value = 'ante'}}, colours = {G.C.IMPORTANT},shadow = true, font = G.LANGUAGES['en-us'].font, scale = 2*scale}),id = 'ante_UI_count'}},"
+position = "at"
+payload = "{n=G.UIT.O, config={object = DynaText({string = number_format(G.GAME.round_resets.ante), colours = {G.C.IMPORTANT},shadow = true, font = G.LANGUAGES['en-us'].font, scale = scale_number(G.GAME.round_resets.ante, 2*scale, 100)}),id = 'ante_UI_count'}},--{n=G.UIT.T, config={text = number_format(G.GAME.round_resets.ante), lang = G.LANGUAGES['en-us'], scale = scale_number(G.GAME.round_resets.ante, 2*scale, 100), colour = G.C.IMPORTANT, shadow = true,id = 'ante_UI_count'}},"
+match_indent = true
+overwrite = true
