@@ -117,7 +117,7 @@ function scale_number(number, scale, max)
   if not number or not is_number(number) then return scale end
   if not max then max = 10000 end
   if Big:new(number).e == 10^1000 then
-    scale = scale*math.floor(math.log(max*10, 10))/10
+    scale = scale*math.floor(math.log(max*10, 10))/7
   end
   if Big:new(number) >= Big:new(G.E_SWITCH_POINT) then
     if (Big:new(number).e <= 9999) then

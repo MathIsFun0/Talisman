@@ -250,6 +250,12 @@ function Big:lt(b)
 end
 
 function BigMeta.__lt(b1, b2)
+    if b2:is_naneinf() then
+        return true
+    end
+    if b1:is_naneinf() then
+        return false
+    end
     return b1:lt(b2)
 end
 
@@ -259,7 +265,7 @@ end
 
 function BigMeta.__le(b1, b2)
     if b2:is_naneinf() then
-        return b1:is_naneinf()
+        return true
     end
     if b1:is_naneinf() then
         return false
