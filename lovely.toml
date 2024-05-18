@@ -11,6 +11,16 @@ sources = [
 	"talisman.lua"
 ]
 
+# Show a Gold Seal to confirm Talisman is Active
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "local replace_card = Card(self.title_top.T.x, self.title_top.T.y, 1.2*G.CARD_W*SC_scale, 1.2*G.CARD_H*SC_scale, G.P_CARDS.S_A, G.P_CENTERS.c_base)"
+position = "after"
+payload = "replace_card:set_seal('Gold', true, true)"
+match_indent = true
+overwrite = false
+
 # Use formatted numbers for poker hand scores
 [[patches]]
 [patches.pattern]
@@ -73,7 +83,7 @@ overwrite = true
 target = "functions/state_events.lua"
 pattern = "if hand_chips*mult > 0 then"
 position = "at"
-payload = "if hand_chips*mult > Big:new(0) then"
+payload = "if Big:new(hand_chips)*mult > Big:new(0) then"
 match_indent = true
 overwrite = true
 
@@ -211,7 +221,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if delta < 0 then delta = ''..delta; col = G.C.RED"
 position = "at"
-payload = "if Big:new(delta) < Big:new(0) then delta = Big:new(delta):to_string(); col = G.C.RED"
+payload = "if Big:new(delta) < Big:new(0) then delta = number_format(delta); col = G.C.RED"
 match_indent = true
 overwrite = true
 
@@ -220,7 +230,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "elseif delta > 0 then delta = '+'..delta"
 position = "at"
-payload = "elseif Big:new(delta) > Big:new(0) then delta = '+'..Big:new(delta):to_string()"
+payload = "elseif Big:new(delta) > Big:new(0) then delta = '+'..number_format(delta)"
 match_indent = true
 overwrite = true
 
@@ -229,7 +239,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "else delta = ''..delta"
 position = "at"
-payload = "else delta = Big:new(delta):to_string()"
+payload = "else delta = number_format(delta)"
 match_indent = true
 overwrite = true
 
@@ -287,5 +297,48 @@ target = "functions/common_events.lua"
 pattern = "G.GAME.round_resets.ante = G.GAME.round_resets.ante + mod"
 position = "after"
 payload = "G.GAME.round_resets.ante_disp = number_format(G.GAME.round_resets.ante)"
+match_indent = true
+overwrite = false
+
+# For some reason Big leaks into the text engine, this mitigates it
+[[patches]]
+[patches.pattern]
+target = "engine/text.lua"
+pattern = "if self.strings[k].W > self.config.W then self.config.W = self.strings[k].W; self.strings[k].W_offset = 0 end"
+position = "before"
+payload = '''
+if type(self.strings[k].W) == 'table' then
+	self.strings[k].W = self.strings[k].W:to_number()
+end
+if type(self.strings[k].H) == 'table' then
+	self.strings[k].H = self.strings[k].H:to_number()
+end
+'''
+match_indent = true
+overwrite = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/text.lua"
+pattern = "function DynaText:draw()"
+position = "after"
+payload = '''
+self.scale = Big:new(self.scale):to_number()
+if self.shadow_parallax then self.shadow_parallax.x = Big:new(self.shadow_parallax.x):to_number() end
+'''
+match_indent = true
+overwrite = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/text.lua"
+pattern = "for k, letter in ipairs(self.strings[self.focused_string].letters) do"
+position = "after"
+payload = '''
+letter.dims.x = Big:new(letter.dims.x):to_number()
+letter.dims.y = Big:new(letter.dims.y):to_number()
+letter.offset.x = Big:new(letter.offset.x):to_number()
+letter.offset.y = Big:new(letter.offset.y):to_number()
+'''
 match_indent = true
 overwrite = false

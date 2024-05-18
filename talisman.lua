@@ -162,3 +162,9 @@ function math.min(x, y)
   end
   return min(x,y)
 end
+
+local sqrt = math.sqrt
+function math.sqrt(x)
+  if getmetatable(x) == BigMeta then return x:sqrt() end
+  return sqrt(x)
+end
