@@ -21,6 +21,12 @@ payload = "replace_card:set_seal('Gold', true, true)"
 match_indent = true
 overwrite = false
 
+[[patches]]
+[patches.module]
+source = "nativefs.lua"
+before = "main.lua"
+name = "nativefs"
+
 # Use formatted numbers for poker hand scores
 [[patches]]
 [patches.pattern]

@@ -89,21 +89,16 @@ function get_blind_amount(ante)
     end
   end
 
-local cashs = check_and_set_high_score
 function check_and_set_high_score(score, amt)
-  if type(amt) == 'table' then
-    if G.GAME.round_scores[score] and Big:new(math.floor(amt)) > Big:new(G.GAME.round_scores[score].amt) then
-      G.GAME.round_scores[score].amt = Big:new(math.floor(amt))
-    end
-    if  G.GAME.seeded  then return end
-    --[[if G.PROFILES[G.SETTINGS.profile].high_scores[score] and math.floor(amt) > G.PROFILES[G.SETTINGS.profile].high_scores[score].amt then
-      if G.GAME.round_scores[score] then G.GAME.round_scores[score].high_score = true end
-      G.PROFILES[G.SETTINGS.profile].high_scores[score].amt = math.floor(amt)
-      G:save_settings()
-    end--]] --going to hold off on modifying this until proper save loading exists
-  else
-    return cashs(score, amt)
+  if G.GAME.round_scores[score] and Big:new(math.floor(amt)) > Big:new(G.GAME.round_scores[score].amt) then
+    G.GAME.round_scores[score].amt = Big:new(math.floor(amt))
   end
+  if  G.GAME.seeded  then return end
+  --[[if G.PROFILES[G.SETTINGS.profile].high_scores[score] and math.floor(amt) > G.PROFILES[G.SETTINGS.profile].high_scores[score].amt then
+    if G.GAME.round_scores[score] then G.GAME.round_scores[score].high_score = true end
+    G.PROFILES[G.SETTINGS.profile].high_scores[score].amt = math.floor(amt)
+    G:save_settings()
+  end--]] --going to hold off on modifying this until proper save loading exists
 end
 
 function is_number(x)
