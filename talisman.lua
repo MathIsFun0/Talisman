@@ -1,6 +1,7 @@
 local lovely = require("lovely")
-Big = dofile(lovely.mod_dir.."/Talisman/big-num/bignumber.lua")
-Notations = dofile(lovely.mod_dir.."/Talisman/big-num/notations.lua")
+local nativefs = require("nativefs")
+Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/bignumber.lua")()
+Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
 
 local igo = Game.init_game_object
 function Game:init_game_object()
