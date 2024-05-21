@@ -18,7 +18,7 @@ function number_format(num)
         num = Big:new(num)
         G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
         if num < Big:new(G.E_SWITCH_POINT) then
-            return Notations.ThousandNotation:format(num)
+            return nf(num:to_number())
         elseif num.e < G.E_SWITCH_POINT/1000 then
             return Notations.ScientificNotation.format_mantissa(num.m, 3).."e"..Notations.ThousandNotation:format(Big:new(num.e))
         elseif num.e == 10^1000 then
@@ -116,11 +116,13 @@ function scale_number(number, scale, max)
     scale = scale*math.floor(math.log(max*10, 10))/7
   end
   if Big:new(number) >= Big:new(G.E_SWITCH_POINT) then
-    if (Big:new(number).e <= 9999) then
+    if (Big:new(number).e <= 999) then
       scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(1000000*10, 10))
     else
       scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.max(7,string.len(number_format(number))-1))
     end
+  elseif Big:new(number) >= Big:new(max) then
+    scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(number*10, 10))
   end
   return math.min(3, scale:to_number())
 end

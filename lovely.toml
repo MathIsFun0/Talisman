@@ -50,18 +50,9 @@ overwrite = true
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"
-pattern = "if args.type == 'chip_score' then"
-position = "at"
-payload = "if args.type == 'chip_score' and type(args.chips) == 'table' then"
-match_indent = true
-overwrite = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
 pattern = "if args.chips >= 10000 then"
 position = "at"
-payload = "if args.chips >= Big:new(10000) then"
+payload = "if Big:new(args.chips) >= Big:new(10000) then"
 match_indent = true
 overwrite = true
 
@@ -70,7 +61,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if args.chips >= 1000000 then"
 position = "at"
-payload = "if args.chips >= Big:new(1000000) then"
+payload = "if Big:new(args.chips) >= Big:new(1000000) then"
 match_indent = true
 overwrite = true
 
@@ -79,7 +70,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if args.chips >= 100000000 then"
 position = "at"
-payload = "if args.chips >= Big:new(100000000) then"
+payload = "if Big:new(args.chips) >= Big:new(100000000) then"
 match_indent = true
 overwrite = true
 
