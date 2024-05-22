@@ -340,6 +340,26 @@ letter.offset.y = Big:new(letter.offset.y):to_number()
 match_indent = true
 overwrite = false
 
+# call init game object appendum after init game object
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "if new_game_obj then self.GAME = self:init_game_object() end"
+position = "after"
+payload =  "if new_game_obj and Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end"
+match_indent = true
+overwrite = false
+
+# call init game object appendum after init game object
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "self.GAME = saveTable and saveTable.GAME or self:init_game_object()"
+position = "after"
+payload =  "if (not saveTable or not saveTable.GAME) and Talisman and Talisman.igo then self.GAME = Talisman.igo(self.GAME) end"
+match_indent = true
+overwrite = false
+
 # remove more animations from event queue
 [[patches]]
 [patches.pattern]

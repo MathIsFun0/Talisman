@@ -41,9 +41,8 @@ G.FUNCS.options = function(e)
   nativefs.write(lovely.mod_dir.."/Talisman/config.lua", STR_PACK(Talisman.config_file))
 end
 
-local igo = Game.init_game_object
-function Game:init_game_object()
-    obj = igo(self)
+-- We call this after init_game_object to leave room for mods that add more poker hands
+Talisman.igo = function(obj)
     for _, v in pairs(obj.hands) do
         v.mult = Big:new(v.mult)
     end
