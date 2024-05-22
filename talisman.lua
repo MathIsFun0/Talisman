@@ -16,7 +16,7 @@ function create_tabs(args)
           label = "Talisman",
           tab_definition_function = function()
               tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
-                {n=G.UIT.O, config={object = DynaText({string = "Select features to enable (applies on game restart):", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
+                {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
               }},create_toggle({label = "Disable Scoring Animations", ref_table = config_file, ref_value = "disable_anims"})}
               return {
               n = G.UIT.ROOT,
