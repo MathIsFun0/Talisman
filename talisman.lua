@@ -4,9 +4,9 @@ Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/bignumber.lua")()
 Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
 
 
-local config_file = {disable_anims = false}
+Talisman = {config_file = {disable_anims = false}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
-    config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
+    Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
 end
 
 local ct = create_tabs
@@ -17,7 +17,7 @@ function create_tabs(args)
           tab_definition_function = function()
               tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
                 {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-              }},create_toggle({label = "Disable Scoring Animations", ref_table = config_file, ref_value = "disable_anims"})}
+              }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims"})}
               return {
               n = G.UIT.ROOT,
               config = {
@@ -34,6 +34,11 @@ function create_tabs(args)
           }
     end
     return ct(args)
+end
+local G_FUNCS_options_ref = G.FUNCS.options
+G.FUNCS.options = function(e)
+  G_FUNCS_options_ref(e)
+  nativefs.write(lovely.mod_dir.."/Talisman/config.lua", STR_PACK(Talisman.config_file))
 end
 
 local igo = Game.init_game_object
@@ -204,11 +209,11 @@ end
 --patch to remove animations
 local cest = card_eval_status_text
 function card_eval_status_text(a,b,c,d,e,f)
-    if not config_file.disable_anims then cest(a,b,c,d,e,f) end
+    if not Talisman.config_file.disable_anims then cest(a,b,c,d,e,f) end
 end
 local jc = juice_card
 function juice_card(x)
-    if not config_file.disable_anims then jc(x) end
+    if not Talisman.config_file.disable_anims then jc(x) end
 end
 function tal_uht(config, vals)
     local col = G.C.GREEN
@@ -252,7 +257,7 @@ function tal_uht(config, vals)
 end
 local uht = update_hand_text
 function update_hand_text(config, vals)
-    if config_file.disable_anims then
+    if Talisman.config_file.disable_anims then
         G.latest_uht = {config=config, vals=vals}
     else uht(config, vals)
     end
@@ -264,4 +269,10 @@ function Game:update(dt)
         tal_uht(G.latest_uht.config, G.latest_uht.vals)
         G.latest_uht = nil
     end
+end
+
+local ju = Card.juice_up
+function Card:juice_up(a,b)
+  if Talisman.config_file.disable_anims then return end
+  return ju(self,a,b)
 end

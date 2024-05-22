@@ -339,3 +339,13 @@ letter.offset.y = Big:new(letter.offset.y):to_number()
 '''
 match_indent = true
 overwrite = false
+
+# remove more animations from event queue
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = "if effects[ii].card then"
+position = "at"
+payload = "if effects[ii].card and not Talisman.config_file.disable_anims then"
+match_indent = true
+overwrite = false
