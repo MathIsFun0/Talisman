@@ -270,9 +270,3 @@ function Game:update(dt)
         G.latest_uht = nil
     end
 end
-
-local ju = Card.juice_up
-function Card:juice_up(a,b)
-  if Talisman.config_file.disable_anims then return end
-  return ju(self,a,b)
-end
