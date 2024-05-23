@@ -397,3 +397,28 @@ position = "at"
 payload = "--if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) end"
 match_indent = true
 overwrite = false
+
+# Juice Issues
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "func = (function() card:juice_up(0.7);return true end)"
+position = "at"
+payload = "func = (function() if card and card.juice_up then card:juice_up(0.7) end;return true end)"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if card then card:juice_up(0.8, 0.5) end"
+position = "at"
+payload = "if card and card.juice_up then card:juice_up(0.8, 0.5) end"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "card:juice_up(0.6, 0.1)"
+position = "at"
+payload = "if card and card.juice_up then card:juice_up(0.6, 0.1) end"
+match_indent = true
