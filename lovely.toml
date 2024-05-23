@@ -126,9 +126,7 @@ overwrite = true
 target = "game.lua"
 pattern = "if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then"
 position = "at"
-payload = '''print(Big:new(G.GAME.chips):to_string())
-print(Big:new(G.GAME.blind.chips):to_string())
-if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then'''
+payload = '''if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then'''
 match_indent = true
 overwrite = true
 
@@ -297,6 +295,16 @@ payload = "G.GAME.round_resets.ante_disp = number_format(G.GAME.round_resets.ant
 match_indent = true
 overwrite = false
 
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if not G.ARGS.hand_chip_total_UI_set or G.ARGS.hand_chip_total_UI_set <  G.GAME.current_round.current_hand.chip_total then"
+position = "at"
+payload = "if not G.ARGS.hand_chip_total_UI_set or Big:new(G.ARGS.hand_chip_total_UI_set) < Big:new(G.GAME.current_round.current_hand.chip_total) then"
+match_indent = true
+overwrite = true
+
+
 # For some reason Big leaks into the text engine, this mitigates it
 [[patches]]
 [patches.pattern]
@@ -367,5 +375,25 @@ target = "functions/state_events.lua"
 pattern = "if effects[ii].card then"
 position = "at"
 payload = "if effects[ii].card and not Talisman.config_file.disable_anims then"
+match_indent = true
+overwrite = false
+
+#enhancement animation removing
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "if self.edition and not silent then"
+position = "at"
+payload = "if self.edition and (not Talisman.config_file.disable_anims or (not Talisman.calculating_joker and not Talisman.calculating_score)) and not silent then"
+match_indent = true
+overwrite = false
+
+# dollar buffer thingy
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))"
+position = "at"
+payload = "--if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)})) end"
 match_indent = true
 overwrite = false

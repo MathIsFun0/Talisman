@@ -268,4 +268,53 @@ function Game:update(dt)
         tal_uht(G.latest_uht.config, G.latest_uht.vals)
         G.latest_uht = nil
     end
+    if Talisman.dollar_update then
+      G.HUD:get_UIE_by_ID('dollar_text_UI').config.object:update()
+      G.HUD:recalculate()
+      Talisman.dollar_update = false
+    end
+end
+
+--wrap everything in calculating contexts so we can do more things with it
+Talisman.calculating_joker = false
+Talisman.calculating_score = false
+Talisman.dollar_update = false
+local ccj = Card.calculate_joker
+function Card:calculate_joker(context)
+  Talisman.calculating_joker = true
+  local ret = ccj(self, context)
+  Talisman.calculating_joker = false
+  return ret
+end
+local gfep = G.FUNCS.evaluate_play
+G.FUNCS.evaluate_play = function(e)
+  Talisman.calculating_score = true
+  local ret = gfep(e)
+  Talisman.calculating_score = false
+  return ret
+end
+local sm = Card.start_materialize
+function Card:start_materialize(a,b,c)
+  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then return end
+  return sm(self,a,b,c)
+end
+local sd = Card.start_dissolve
+function Card:start_dissolve(a,b,c,d)
+  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then self:remove() return end
+  return sd(self,a,b,c,d)
+end
+local ss = Card.set_seal
+function Card:set_seal(a,b,immediate)
+  return ss(self,a,b,Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) or immediate)
+end
+
+--Easing fixes
+local edo = ease_dollars
+function ease_dollars(mod, instant)
+  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then
+    mod = mod or 0
+    if mod < 0 then inc_career_stat('c_dollars_earned', mod) end
+    G.GAME.dollars = G.GAME.dollars + mod
+    Talisman.dollar_update = true
+  else return edo(mod, instant) end
 end
