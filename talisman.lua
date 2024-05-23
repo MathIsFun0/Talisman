@@ -257,14 +257,20 @@ end
 local uht = update_hand_text
 function update_hand_text(config, vals)
     if Talisman.config_file.disable_anims then
-        G.latest_uht = {config=config, vals=vals}
+        if G.latest_uht then
+          local chips = G.latest_uht.vals.chips
+          local mult = G.latest_uht.vals.mult
+          if not vals.chips then vals.chips = chips end
+          if not vals.mult then vals.mult = mult end
+        end
+        G.latest_uht = {config = config, vals = vals}
     else uht(config, vals)
     end
 end
 local upd = Game.update
 function Game:update(dt)
     upd(self, dt)
-    if G.latest_uht then
+    if G.latest_uht and G.latest_uht.config and G.latest_uht.vals then
         tal_uht(G.latest_uht.config, G.latest_uht.vals)
         G.latest_uht = nil
     end
