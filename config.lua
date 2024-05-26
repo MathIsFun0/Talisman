@@ -1,1 +1,1 @@
-return {["disable_anims"]=false,}
+return {["disable_anims"]=true,}

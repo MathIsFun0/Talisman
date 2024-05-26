@@ -284,12 +284,20 @@ end
 --wrap everything in calculating contexts so we can do more things with it
 Talisman.calculating_joker = false
 Talisman.calculating_score = false
+Talisman.calculating_card = false
 Talisman.dollar_update = false
 local ccj = Card.calculate_joker
 function Card:calculate_joker(context)
   Talisman.calculating_joker = true
   local ret = ccj(self, context)
   Talisman.calculating_joker = false
+  return ret
+end
+local cuc = Card.use_consumable
+function Card:use_consumable(x,y)
+  Talisman.calculating_score = true
+  local ret = cuc(self, x,y)
+  Talisman.calculating_score = false
   return ret
 end
 local gfep = G.FUNCS.evaluate_play
@@ -299,28 +307,54 @@ G.FUNCS.evaluate_play = function(e)
   Talisman.calculating_score = false
   return ret
 end
+--[[local ec = eval_card
+function eval_card()
+  Talisman.calculating_card = true
+  local ret = ec()
+  Talisman.calculating_card = false
+  return ret
+end--]]
 local sm = Card.start_materialize
 function Card:start_materialize(a,b,c)
-  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then return end
+  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then return end
   return sm(self,a,b,c)
 end
 local sd = Card.start_dissolve
 function Card:start_dissolve(a,b,c,d)
-  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then self:remove() return end
+  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then self:remove() return end
   return sd(self,a,b,c,d)
 end
 local ss = Card.set_seal
 function Card:set_seal(a,b,immediate)
-  return ss(self,a,b,Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) or immediate)
+  return ss(self,a,b,Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) or immediate)
 end
 
 --Easing fixes
+--Changed this to always work; it's less pretty but fine for held in hand things
 local edo = ease_dollars
 function ease_dollars(mod, instant)
-  if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score) then
+  --if Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then
     mod = mod or 0
     if mod < 0 then inc_career_stat('c_dollars_earned', mod) end
     G.GAME.dollars = G.GAME.dollars + mod
     Talisman.dollar_update = true
-  else return edo(mod, instant) end
+  --else return edo(mod, instant) end
 end
+
+--some debugging functions
+--[[local callstep=0
+function printCallerInfo()
+  -- Get debug info for the caller of the function that called printCallerInfo
+  local info = debug.getinfo(3, "Sl")
+  callstep = callstep+1
+  if info then
+      print("["..callstep.."] "..(info.short_src or "???")..":"..(info.currentline or "unknown"))
+  else
+      print("Caller information not available")
+  end
+end
+local emae = EventManager.add_event
+function EventManager:add_event(x,y,z)
+  printCallerInfo()
+  return emae(self,x,y,z)
+end--]]
