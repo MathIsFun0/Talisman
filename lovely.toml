@@ -348,6 +348,18 @@ letter.offset.y = Big:new(letter.offset.y):to_number()
 match_indent = true
 overwrite = false
 
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "if _th and _tw then"
+position = "after"
+payload = '''
+_th = Big:new(_th):to_number()
+_tw = Big:new(_tw):to_number()
+'''
+match_indent = true
+overwrite = false
+
 # call init game object appendum after init game object
 [[patches]]
 [patches.pattern]
