@@ -80,7 +80,7 @@ end
 
 local lg = math.log
 function math.log(x, y)
-    if not y then y = 10 end
+    if not y then y = 2.718281828459045 end
     if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
     return lg(x,y)
 end
