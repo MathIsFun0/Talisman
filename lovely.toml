@@ -369,12 +369,13 @@ _tw = Big:new(_tw):to_number()
 match_indent = true
 overwrite = false
 
+#these last few are causing lag, so they'll only be applied in the main menu
 [[patches]]
 [patches.pattern]
 target = "engine/ui.lua"
 pattern = "local _cw, _ch = w:set_wh()"
 position = "after"
-payload = "_cw = Big:new(_cw):to_number(); _ch = Big:new(_ch):to_number()"
+payload = "if G.STATE == G.STATES.MENU then _cw = Big:new(_cw):to_number(); _ch = Big:new(_ch):to_number() end"
 match_indent = true
 
 [[patches]]
@@ -383,10 +384,10 @@ target = "engine/moveable.lua"
 pattern = "function Moveable:move_wh(dt)"
 position = "after"
 payload = '''
-self.T.w = Big:new(self.T.w):to_number()
+if G.STATE == G.STATES.MENU then self.T.w = Big:new(self.T.w):to_number()
 self.T.h = Big:new(self.T.h):to_number()
 self.VT.w = Big:new(self.VT.w):to_number()
-self.VT.h = Big:new(self.VT.h):to_number()
+self.VT.h = Big:new(self.VT.h):to_number() end
 '''
 match_indent = true
 
@@ -396,10 +397,10 @@ target = "functions/misc_functions.lua"
 pattern = "function prep_draw(moveable, scale, rotate, offset)"
 position = "after"
 payload = '''
-moveable.VT.x = Big:new(moveable.VT.x):to_number()
+if G.STATE == G.STATES.MENU then moveable.VT.x = Big:new(moveable.VT.x):to_number()
 moveable.VT.y = Big:new(moveable.VT.y):to_number()
 moveable.VT.w = Big:new(moveable.VT.w):to_number()
-moveable.VT.h = Big:new(moveable.VT.h):to_number()
+moveable.VT.h = Big:new(moveable.VT.h):to_number() end
 '''
 match_indent = true
 
@@ -409,7 +410,7 @@ target = "engine/ui.lua"
 pattern = "if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end"
 position = "before"
 payload = '''
-self.config.scale = Big:new(self.config.scale):to_number()
+if G.STATE == G.STATES.MENU then self.config.scale = Big:new(self.config.scale):to_number() end
 '''
 match_indent = true
 
