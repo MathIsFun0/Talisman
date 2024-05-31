@@ -46,7 +46,7 @@ payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].mult)
 match_indent = true
 overwrite = true
 
-# Chip requirements for achievements
+# Chip requirements for achievements/unlocks
 [[patches]]
 [patches.pattern]
 target = "functions/common_events.lua"
@@ -71,6 +71,15 @@ target = "functions/common_events.lua"
 pattern = "if args.chips >= 100000000 then"
 position = "at"
 payload = "if Big:new(args.chips) >= Big:new(100000000) then"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if card.unlock_condition.chips <= args.chips then"
+position = "at"
+payload = "if Big:new(card.unlock_condition.chips) <= Big:new(args.chips) then"
 match_indent = true
 overwrite = true
 
@@ -359,6 +368,50 @@ _tw = Big:new(_tw):to_number()
 '''
 match_indent = true
 overwrite = false
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "local _cw, _ch = w:set_wh()"
+position = "after"
+payload = "_cw = Big:new(_cw):to_number(); _ch = Big:new(_ch):to_number()"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "engine/moveable.lua"
+pattern = "function Moveable:move_wh(dt)"
+position = "after"
+payload = '''
+self.T.w = Big:new(self.T.w):to_number()
+self.T.h = Big:new(self.T.h):to_number()
+self.VT.w = Big:new(self.VT.w):to_number()
+self.VT.h = Big:new(self.VT.h):to_number()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/misc_functions.lua"
+pattern = "function prep_draw(moveable, scale, rotate, offset)"
+position = "after"
+payload = '''
+moveable.VT.x = Big:new(moveable.VT.x):to_number()
+moveable.VT.y = Big:new(moveable.VT.y):to_number()
+moveable.VT.w = Big:new(moveable.VT.w):to_number()
+moveable.VT.h = Big:new(moveable.VT.h):to_number()
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "engine/ui.lua"
+pattern = "if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end"
+position = "before"
+payload = '''
+self.config.scale = Big:new(self.config.scale):to_number()
+'''
+match_indent = true
 
 # call init game object appendum after init game object
 [[patches]]
