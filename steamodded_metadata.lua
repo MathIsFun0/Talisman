@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [MathIsFun_]
 --- MOD_DESCRIPTION: A mod that increases Balatro's score limit.
 --- PREFIX: talisman
---- VERSION: 1.1.11
+--- VERSION: 1.1.12
 
 ----------------------------------------------
 ------------MOD CODE -------------------------

@@ -8,37 +8,66 @@ Talisman = {config_file = {disable_anims = false}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
     Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
 end
-
-local ct = create_tabs
-function create_tabs(args)
-    if args and args.tab_h == 7.05 then
-        args.tabs[#args.tabs+1] = {
-          label = "Talisman",
-          tab_definition_function = function()
-              tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
-                {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-              }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims"})}
-              return {
-              n = G.UIT.ROOT,
-              config = {
-                  emboss = 0.05,
-                  minh = 6,
-                  r = 0.1,
-                  minw = 10,
-                  align = "cm",
-                  padding = 0.2,
-                  colour = G.C.BLACK
-              },
-              nodes = tal_nodes
-          }end
+if not SpectralPack then
+  SpectralPack = {}
+  local ct = create_tabs
+  function create_tabs(args)
+      if args and args.tab_h == 7.05 then
+          args.tabs[#args.tabs+1] = {
+              label = "Spectral Pack",
+              tab_definition_function = function() return {
+                  n = G.UIT.ROOT,
+                  config = {
+                      emboss = 0.05,
+                      minh = 6,
+                      r = 0.1,
+                      minw = 10,
+                      align = "cm",
+                      padding = 0.2,
+                      colour = G.C.BLACK
+                  },
+                  nodes = SpectralPack
+              } end
           }
-    end
-    return ct(args)
+      end
+      return ct(args)
+  end
 end
-local G_FUNCS_options_ref = G.FUNCS.options
-G.FUNCS.options = function(e)
-  G_FUNCS_options_ref(e)
-  nativefs.write(lovely.mod_dir.."/Talisman/config.lua", STR_PACK(Talisman.config_file))
+SpectralPack[#SpectralPack+1] = UIBox_button{ label = {"Talisman"}, button = "talismanMenu", colour = G.C.MONEY, minw = 5, minh = 0.7, scale = 0.6}
+G.FUNCS.talismanMenu = function(e)
+  local tabs = create_tabs({
+      snap_to_nav = true,
+      tabs = {
+          {
+              label = "Talisman",
+              chosen = true,
+              tab_definition_function = function()
+                tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
+                  {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
+                }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims"})}
+                return {
+                n = G.UIT.ROOT,
+                config = {
+                    emboss = 0.05,
+                    minh = 6,
+                    r = 0.1,
+                    minw = 10,
+                    align = "cm",
+                    padding = 0.2,
+                    colour = G.C.BLACK
+                },
+                nodes = tal_nodes
+            }
+              end
+          },
+      }})
+  G.FUNCS.overlay_menu{
+          definition = create_UIBox_generic_options({
+              back_func = "options",
+              contents = {tabs}
+          }),
+      config = {offset = {x=0,y=10}}
+  }
 end
 
 -- We call this after init_game_object to leave room for mods that add more poker hands
