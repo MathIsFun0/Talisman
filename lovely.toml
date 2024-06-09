@@ -270,15 +270,6 @@ overwrite = true
 
 [[patches]]
 [patches.pattern]
-target = "main.lua"
-pattern = 'setfenv(chunk, {})  -- Use an empty environment to prevent access to potentially harmful functions'
-position = "at"
-payload = 'setfenv(chunk, {Big = Big, BigMeta = BigMeta})  -- Use an empty environment to prevent access to potentially harmful functions... except for our large numbers'
-match_indent = true
-overwrite = true
-
-[[patches]]
-[patches.pattern]
 target = "functions/UI_definitions.lua"
 pattern = "{n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.GAME.round_resets, ref_value = 'ante'}}, colours = {G.C.IMPORTANT},shadow = true, font = G.LANGUAGES['en-us'].font, scale = 2*scale}),id = 'ante_UI_count'}},"
 position = "at"
