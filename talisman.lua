@@ -261,8 +261,8 @@ function tal_uht(config, vals)
     local col = G.C.GREEN
     if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
         local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
-        if to_big(delta) < to_big(0) or delta < 0 then delta = number_format(delta); col = G.C.RED
-        elseif to_big(delta) > to_big(0) or delta > 0 then delta = '+'..number_format(delta)
+        if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
+        elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
         else delta = number_format(delta)
         end
         if type(vals.chips) == 'string' then delta = vals.chips end
@@ -271,7 +271,7 @@ function tal_uht(config, vals)
     end
     if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
         local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
-        if to_big(delta) < to_big(0) or delta < 0 then delta = number_format(delta); col = G.C.RED
+        if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED
         elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
         else delta = number_format(delta)
         end
