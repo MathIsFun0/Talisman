@@ -1,10 +1,8 @@
 local lovely = require("lovely")
 local nativefs = require("nativefs")
-Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/bignumber.lua")()
-Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
 
 
-Talisman = {config_file = {disable_anims = false}}
+Talisman = {config_file = {disable_anims = true, break_infinity = true}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
     Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
 end
@@ -44,7 +42,14 @@ G.FUNCS.talismanMenu = function(e)
               tab_definition_function = function()
                 tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
                   {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-                }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims"})}
+                }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims",
+                callback = function(_set_toggle)
+	                nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
+                end}),
+                create_toggle({label = "Increase Score Limit (requires game restart)", ref_table = Talisman.config_file, ref_value = "break_infinity",
+                callback = function(_set_toggle)
+	                nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
+                end})}
                 return {
                 n = G.UIT.ROOT,
                 config = {
@@ -69,169 +74,178 @@ G.FUNCS.talismanMenu = function(e)
       config = {offset = {x=0,y=10}}
   }
 end
-
--- We call this after init_game_object to leave room for mods that add more poker hands
-Talisman.igo = function(obj)
-    for _, v in pairs(obj.hands) do
-        v.mult = Big:new(v.mult)
-    end
-    return obj
-end
-
-local nf = number_format
-function number_format(num)
-    if type(num) == 'table' then
-        num = Big:new(num)
-        G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
-        if num < Big:new(G.E_SWITCH_POINT) then
-            return nf(num:to_number())
-        elseif num.e < G.E_SWITCH_POINT/1000 then
-            return Notations.ScientificNotation.format_mantissa(num.m, 3).."e"..Notations.ThousandNotation:format(Big:new(num.e))
-        elseif num.e == 10^1000 then
-            return "Infinity"
-        else
-            return "e"..Notations.ScientificNotation:format(Big:new(num.e), 3)
-        end
-    else return nf(num) end
-end
-
-local mf = math.floor
-function math.floor(x)
-    if type(x) == 'table' then return x:floor() end
-    return mf(x)
-end
-
-local l10 = math.log10
-function math.log10(x)
-    if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-    return l10(x)
-end
-
-local lg = math.log
-function math.log(x, y)
-    if not y then y = 2.718281828459045 end
-    if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
-    return lg(x,y)
-end
-
--- There's too much to override here so we just fully replace this function
--- Note that any ante scaling tweaks will need to manually changed...
-function get_blind_amount(ante)
-    local k = Big:new(0.75)
-    if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
-      local amounts = {
-        Big:new(300),  Big:new(800), Big:new(2000),  Big:new(5000),  Big:new(11000),  Big:new(20000),   Big:new(35000),  Big:new(50000)
-      }
-      if ante < 1 then return Big:new(100) end
-      if ante <= 8 then return amounts[ante] end
-      local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-      local amount = a*(b+(k*c)^d)^c
-      amount.m = math.floor(10*amount.m)/10
-      amount:normalize()
-      return amount
-    elseif G.GAME.modifiers.scaling == 2 then 
-      local amounts = {
-        Big:new(300),  Big:new(900), Big:new(2600),  Big:new(8000), Big:new(20000),  Big:new(36000),  Big:new(60000),  Big:new(100000)
-        --300,  900, 2400,  7000,  18000,  32000,  56000,  90000
-      }
-      if ante < 1 then return Big:new(100) end
-      if ante <= 8 then return amounts[ante] end
-      local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-      local amount = math.floor(a*(b+(k*c)^d)^c)
-      amount.m = math.floor(10*amount.m)/10
-      amount:normalize()
-      return amount
-    elseif G.GAME.modifiers.scaling == 3 then 
-      local amounts = {
-        Big:new(300),  Big:new(1000), Big:new(3200),  Big:new(9000),  Big:new(25000),  Big:new(60000),  Big:new(110000),  Big:new(200000)
-        --300,  1000, 3000,  8000,  22000,  50000,  90000,  180000
-      }
-      if ante < 1 then return Big:new(100) end
-      if ante <= 8 then return amounts[ante] end
-      local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
-      local amount = math.floor(a*(b+(k*c)^d)^c)
-      amount.m = math.floor(10*amount.m)/10
-      amount:normalize()
-      return amount
-    end
+if Talisman.config_file.break_infinity then
+  Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/bignumber.lua")()
+  Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
+  -- We call this after init_game_object to leave room for mods that add more poker hands
+  Talisman.igo = function(obj)
+      for _, v in pairs(obj.hands) do
+          v.chips = Big:new(v.chips)
+          v.mult = Big:new(v.mult)
+      end
+      return obj
   end
 
-function check_and_set_high_score(score, amt)
-  if G.GAME.round_scores[score] and Big:new(math.floor(amt)) > Big:new(G.GAME.round_scores[score].amt) then
-    G.GAME.round_scores[score].amt = Big:new(math.floor(amt))
+  local nf = number_format
+  function number_format(num)
+      if type(num) == 'table' then
+          num = Big:new(num)
+          G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
+          if num < Big:new(G.E_SWITCH_POINT) then
+              return nf(num:to_number())
+          elseif num.e < G.E_SWITCH_POINT/1000 then
+              return Notations.ScientificNotation.format_mantissa(num.m, 3).."e"..Notations.ThousandNotation:format(Big:new(num.e))
+          elseif num.e == 10^1000 then
+              return "Infinity"
+          else
+              return "e"..Notations.ScientificNotation:format(Big:new(num.e), 3)
+          end
+      else return nf(num) end
   end
-  if  G.GAME.seeded  then return end
-  --[[if G.PROFILES[G.SETTINGS.profile].high_scores[score] and math.floor(amt) > G.PROFILES[G.SETTINGS.profile].high_scores[score].amt then
-    if G.GAME.round_scores[score] then G.GAME.round_scores[score].high_score = true end
-    G.PROFILES[G.SETTINGS.profile].high_scores[score].amt = math.floor(amt)
-    G:save_settings()
-  end--]] --going to hold off on modifying this until proper save loading exists
+
+  local mf = math.floor
+  function math.floor(x)
+      if type(x) == 'table' then return x:floor() end
+      return mf(x)
+  end
+
+  local l10 = math.log10
+  function math.log10(x)
+      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
+      return l10(x)
+  end
+
+  local lg = math.log
+  function math.log(x, y)
+      if not y then y = 2.718281828459045 end
+      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
+      return lg(x,y)
+  end
+
+  -- There's too much to override here so we just fully replace this function
+  -- Note that any ante scaling tweaks will need to manually changed...
+  function get_blind_amount(ante)
+      local k = Big:new(0.75)
+      if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
+        local amounts = {
+          Big:new(300),  Big:new(800), Big:new(2000),  Big:new(5000),  Big:new(11000),  Big:new(20000),   Big:new(35000),  Big:new(50000)
+        }
+        if ante < 1 then return Big:new(100) end
+        if ante <= 8 then return amounts[ante] end
+        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
+        local amount = a*(b+(k*c)^d)^c
+        amount.m = math.floor(10*amount.m)/10
+        amount:normalize()
+        return amount
+      elseif G.GAME.modifiers.scaling == 2 then 
+        local amounts = {
+          Big:new(300),  Big:new(900), Big:new(2600),  Big:new(8000), Big:new(20000),  Big:new(36000),  Big:new(60000),  Big:new(100000)
+          --300,  900, 2400,  7000,  18000,  32000,  56000,  90000
+        }
+        if ante < 1 then return Big:new(100) end
+        if ante <= 8 then return amounts[ante] end
+        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
+        local amount = math.floor(a*(b+(k*c)^d)^c)
+        amount.m = math.floor(10*amount.m)/10
+        amount:normalize()
+        return amount
+      elseif G.GAME.modifiers.scaling == 3 then 
+        local amounts = {
+          Big:new(300),  Big:new(1000), Big:new(3200),  Big:new(9000),  Big:new(25000),  Big:new(60000),  Big:new(110000),  Big:new(200000)
+          --300,  1000, 3000,  8000,  22000,  50000,  90000,  180000
+        }
+        if ante < 1 then return Big:new(100) end
+        if ante <= 8 then return amounts[ante] end
+        local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
+        local amount = math.floor(a*(b+(k*c)^d)^c)
+        amount.m = math.floor(10*amount.m)/10
+        amount:normalize()
+        return amount
+      end
+    end
+
+  function check_and_set_high_score(score, amt)
+    if G.GAME.round_scores[score] and Big:new(math.floor(amt)) > Big:new(G.GAME.round_scores[score].amt) then
+      G.GAME.round_scores[score].amt = Big:new(math.floor(amt))
+    end
+    if  G.GAME.seeded  then return end
+    --[[if G.PROFILES[G.SETTINGS.profile].high_scores[score] and math.floor(amt) > G.PROFILES[G.SETTINGS.profile].high_scores[score].amt then
+      if G.GAME.round_scores[score] then G.GAME.round_scores[score].high_score = true end
+      G.PROFILES[G.SETTINGS.profile].high_scores[score].amt = math.floor(amt)
+      G:save_settings()
+    end--]] --going to hold off on modifying this until proper save loading exists
+  end
+
+  function scale_number(number, scale, max)
+    scale = Big:new(scale)
+    G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
+    if not number or not is_number(number) then return scale end
+    if not max then max = 10000 end
+    if Big:new(number).e == 10^1000 then
+      scale = scale*math.floor(math.log(max*10, 10))/7
+    end
+    if Big:new(number) >= Big:new(G.E_SWITCH_POINT) then
+      if (Big:new(number).e <= 999) then
+        scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(1000000*10, 10))
+      else
+        scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.max(7,string.len(number_format(number))-1))
+      end
+    elseif Big:new(number) >= Big:new(max) then
+      scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(number*10, 10))
+    end
+    return math.min(3, scale:to_number())
+  end
+
+  local tsj = G.FUNCS.text_super_juice
+  function G.FUNCS.text_super_juice(e, _amount)
+    if _amount > 2 then _amount = 2 end
+    return tsj(e, _amount)
+  end
+
+  local max = math.max
+  function math.max(x, y)
+    if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
+      x = Big:new(x)
+      y = Big:new(y)
+      if (x > y) then
+        return x
+      else
+        return y
+      end
+    end
+    return max(x,y)
+  end
+
+  local min = math.min
+  function math.min(x, y)
+    if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
+      x = Big:new(x)
+      y = Big:new(y)
+      if (x < y) then
+        return x
+      else
+        return y
+      end
+    end
+    return min(x,y)
+  end
+
+  local sqrt = math.sqrt
+  function math.sqrt(x)
+    if getmetatable(x) == BigMeta then return x:sqrt() end
+    return sqrt(x)
+  end
 end
 
 function is_number(x)
   if type(x) == 'number' then return true end
-  if getmetatable(x) == BigMeta then return true end
+  if BigMeta and getmetatable(x) == BigMeta then return true end
   return false
 end
 
-function scale_number(number, scale, max)
-  scale = Big:new(scale)
-  G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
-  if not number or not is_number(number) then return scale end
-  if not max then max = 10000 end
-  if Big:new(number).e == 10^1000 then
-    scale = scale*math.floor(math.log(max*10, 10))/7
-  end
-  if Big:new(number) >= Big:new(G.E_SWITCH_POINT) then
-    if (Big:new(number).e <= 999) then
-      scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(1000000*10, 10))
-    else
-      scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.max(7,string.len(number_format(number))-1))
-    end
-  elseif Big:new(number) >= Big:new(max) then
-    scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(number*10, 10))
-  end
-  return math.min(3, scale:to_number())
-end
-
-local tsj = G.FUNCS.text_super_juice
-function G.FUNCS.text_super_juice(e, _amount)
-  if _amount > 2 then _amount = 2 end
-  return tsj(e, _amount)
-end
-
-local max = math.max
-function math.max(x, y)
-  if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
-    x = Big:new(x)
-    y = Big:new(y)
-    if (x > y) then
-      return x
-    else
-      return y
-    end
-  end
-  return max(x,y)
-end
-
-local min = math.min
-function math.min(x, y)
-  if getmetatable(x) == BigMeta or getmetatable(y) == BigMeta then
-    x = Big:new(x)
-    y = Big:new(y)
-    if (x < y) then
-      return x
-    else
-      return y
-    end
-  end
-  return min(x,y)
-end
-
-local sqrt = math.sqrt
-function math.sqrt(x)
-  if getmetatable(x) == BigMeta then return x:sqrt() end
-  return sqrt(x)
+function to_big(x)
+  if Big then return Big:new(x) end
+  return x
 end
 
 --patch to remove animations
@@ -247,8 +261,8 @@ function tal_uht(config, vals)
     local col = G.C.GREEN
     if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
         local delta = (is_number(vals.chips) and is_number(G.GAME.current_round.current_hand.chips)) and (vals.chips - G.GAME.current_round.current_hand.chips) or 0
-        if Big:new(delta) < Big:new(0) then delta = number_format(delta); col = G.C.RED
-        elseif Big:new(delta) > Big:new(0) then delta = '+'..number_format(delta)
+        if to_big(delta) < to_big(0) or delta < 0 then delta = number_format(delta); col = G.C.RED
+        elseif to_big(delta) > to_big(0) or delta > 0 then delta = '+'..number_format(delta)
         else delta = number_format(delta)
         end
         if type(vals.chips) == 'string' then delta = vals.chips end
@@ -257,8 +271,8 @@ function tal_uht(config, vals)
     end
     if vals.mult and G.GAME.current_round.current_hand.mult ~= vals.mult then
         local delta = (is_number(vals.mult) and is_number(G.GAME.current_round.current_hand.mult))and (vals.mult - G.GAME.current_round.current_hand.mult) or 0
-        if Big:new(delta) < Big:new(0) then delta = number_format(delta); col = G.C.RED
-        elseif Big:new(delta) > Big:new(0) then delta = '+'..number_format(delta)
+        if to_big(delta) < to_big(0) or delta < 0 then delta = number_format(delta); col = G.C.RED
+        elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)
         else delta = number_format(delta)
         end
         if type(vals.mult) == 'string' then delta = vals.mult end

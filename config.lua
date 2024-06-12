@@ -1,1 +1,0 @@
-return {["disable_anims"]=true,}

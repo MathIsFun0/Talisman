@@ -52,7 +52,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if args.chips >= 10000 then"
 position = "at"
-payload = "if Big:new(args.chips) >= Big:new(10000) then"
+payload = "if to_big(args.chips) >= to_big(10000) then"
 match_indent = true
 overwrite = true
 
@@ -61,7 +61,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if args.chips >= 1000000 then"
 position = "at"
-payload = "if Big:new(args.chips) >= Big:new(1000000) then"
+payload = "if to_big(args.chips) >= to_big(1000000) then"
 match_indent = true
 overwrite = true
 
@@ -70,7 +70,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if args.chips >= 100000000 then"
 position = "at"
-payload = "if Big:new(args.chips) >= Big:new(100000000) then"
+payload = "if to_big(args.chips) >= to_big(100000000) then"
 match_indent = true
 overwrite = true
 
@@ -79,7 +79,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if card.unlock_condition.chips <= args.chips then"
 position = "at"
-payload = "if Big:new(card.unlock_condition.chips) <= Big:new(args.chips) then"
+payload = "if to_big(card.unlock_condition.chips) <= to_big(args.chips) then"
 match_indent = true
 overwrite = true
 
@@ -89,7 +89,7 @@ overwrite = true
 target = "functions/state_events.lua"
 pattern = "if hand_chips*mult > 0 then"
 position = "at"
-payload = "if Big:new(hand_chips)*mult > Big:new(0) then"
+payload = "if to_big(hand_chips)*mult > to_big(0) then"
 match_indent = true
 overwrite = true
 
@@ -98,7 +98,7 @@ overwrite = true
 target = "functions/button_callbacks.lua"
 pattern = "if G.GAME.current_round.current_hand.chip_total < 1 then"
 position = "at"
-payload = "if Big:new(G.GAME.current_round.current_hand.chip_total) < Big:new(1) then"
+payload = "if to_big(G.GAME.current_round.current_hand.chip_total) < to_big(1) then"
 match_indent = true
 overwrite = true
 
@@ -108,7 +108,7 @@ overwrite = true
 target = "main.lua"
 pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 position = "at"
-payload = "G.ARGS.score_intensity.organ = G.video_organ or Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+payload = "G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 match_indent = true
 overwrite = true
 
@@ -117,7 +117,7 @@ overwrite = true
 target = "functions/misc_functions.lua"
 pattern = "G.ARGS.score_intensity.organ = G.video_organ or G.ARGS.score_intensity.required_score > 0 and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 position = "at"
-payload = "G.ARGS.score_intensity.organ = G.video_organ or Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
+payload = "G.ARGS.score_intensity.organ = G.video_organ or to_big(G.ARGS.score_intensity.required_score) > to_big(0) and math.max(math.min(0.4, 0.1*math.log(G.ARGS.score_intensity.earned_score/(G.ARGS.score_intensity.required_score+1), 5)),0.) or 0"
 match_indent = true
 overwrite = true
 
@@ -126,7 +126,7 @@ overwrite = true
 target = "functions/button_callbacks.lua"
 pattern = "if G.ARGS.score_intensity.earned_score >= G.ARGS.score_intensity.required_score and G.ARGS.score_intensity.required_score > 0 then"
 position = "at"
-payload = "if Big:new(G.ARGS.score_intensity.earned_score) >= Big:new(G.ARGS.score_intensity.required_score) and Big:new(G.ARGS.score_intensity.required_score) > Big:new(0) then"
+payload = "if to_big(G.ARGS.score_intensity.earned_score) >= to_big(G.ARGS.score_intensity.required_score) and to_big(G.ARGS.score_intensity.required_score) > to_big(0) then"
 match_indent = true
 overwrite = true
 
@@ -135,7 +135,7 @@ overwrite = true
 target = "game.lua"
 pattern = "if G.GAME.chips - G.GAME.blind.chips >= 0 or G.GAME.current_round.hands_left < 1 then"
 position = "at"
-payload = '''if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then'''
+payload = '''if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) or G.GAME.current_round.hands_left < 1 then'''
 match_indent = true
 overwrite = true
 
@@ -144,7 +144,7 @@ overwrite = true
 target = "functions/state_events.lua"
 pattern = "if G.GAME.chips - G.GAME.blind.chips >= 0 then"
 position = "at"
-payload = "if Big:new(G.GAME.chips) >= Big:new(G.GAME.blind.chips) then"
+payload = "if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then"
 match_indent = true
 overwrite = true
 
@@ -153,7 +153,7 @@ overwrite = true
 target = "blind.lua"
 pattern = "if self.boss and G.GAME.chips - G.GAME.blind.chips >= 0 then"
 position = "at"
-payload = "if self.boss and Big:new(G.GAME.chips) - G.GAME.blind.chips >= Big:new(0) then"
+payload = "if self.boss and to_big(G.GAME.chips) - G.GAME.blind.chips >= to_big(0) then"
 match_indent = true
 overwrite = true
 
@@ -162,7 +162,7 @@ overwrite = true
 target = "card.lua"
 pattern = "G.GAME.chips/G.GAME.blind.chips >= 0.25 then"
 position = "at"
-payload = "Big:new(G.GAME.chips)/G.GAME.blind.chips >= Big:new(0.25) then"
+payload = "to_big(G.GAME.chips)/G.GAME.blind.chips >= to_big(0.25) then"
 match_indent = true
 overwrite = true
 
@@ -225,7 +225,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "if delta < 0 then delta = ''..delta; col = G.C.RED"
 position = "at"
-payload = "if Big:new(delta) < Big:new(0) then delta = number_format(delta); col = G.C.RED"
+payload = "if to_big(delta) < to_big(0) then delta = number_format(delta); col = G.C.RED"
 match_indent = true
 overwrite = true
 
@@ -234,7 +234,7 @@ overwrite = true
 target = "functions/common_events.lua"
 pattern = "elseif delta > 0 then delta = '+'..delta"
 position = "at"
-payload = "elseif Big:new(delta) > Big:new(0) then delta = '+'..number_format(delta)"
+payload = "elseif to_big(delta) > to_big(0) then delta = '+'..number_format(delta)"
 match_indent = true
 overwrite = true
 
@@ -254,7 +254,7 @@ pattern = 'if type_v == "table" then'
 position = "after"
 payload = '''
 if v.m and v.e then
-v = "Big:new("..v.m..","..v.e..")"
+v = "to_big("..v.m..","..v.e..")"
 '''
 match_indent = true
 overwrite = false
@@ -300,7 +300,7 @@ overwrite = false
 target = "functions/button_callbacks.lua"
 pattern = "if not G.ARGS.hand_chip_total_UI_set or G.ARGS.hand_chip_total_UI_set <  G.GAME.current_round.current_hand.chip_total then"
 position = "at"
-payload = "if not G.ARGS.hand_chip_total_UI_set or Big:new(G.ARGS.hand_chip_total_UI_set) < Big:new(G.GAME.current_round.current_hand.chip_total) then"
+payload = "if not G.ARGS.hand_chip_total_UI_set or to_big(G.ARGS.hand_chip_total_UI_set) < to_big(G.GAME.current_round.current_hand.chip_total) then"
 match_indent = true
 overwrite = true
 
@@ -312,11 +312,13 @@ target = "engine/text.lua"
 pattern = "if self.strings[k].W > self.config.W then self.config.W = self.strings[k].W; self.strings[k].W_offset = 0 end"
 position = "before"
 payload = '''
-if type(self.strings[k].W) == 'table' then
-	self.strings[k].W = self.strings[k].W:to_number()
-end
-if type(self.strings[k].H) == 'table' then
-	self.strings[k].H = self.strings[k].H:to_number()
+if Big then
+	if type(self.strings[k].W) == 'table' then
+		self.strings[k].W = self.strings[k].W:to_number()
+	end
+	if type(self.strings[k].H) == 'table' then
+		self.strings[k].H = self.strings[k].H:to_number()
+	end
 end
 '''
 match_indent = true
@@ -328,8 +330,10 @@ target = "engine/text.lua"
 pattern = "function DynaText:draw()"
 position = "after"
 payload = '''
-self.scale = Big:new(self.scale):to_number()
-if self.shadow_parallax then self.shadow_parallax.x = Big:new(self.shadow_parallax.x):to_number() end
+if Big then
+	self.scale = to_big(self.scale):to_number()
+	if self.shadow_parallax then self.shadow_parallax.x = to_big(self.shadow_parallax.x):to_number() end
+end
 '''
 match_indent = true
 overwrite = false
@@ -340,10 +344,12 @@ target = "engine/text.lua"
 pattern = "for k, letter in ipairs(self.strings[self.focused_string].letters) do"
 position = "after"
 payload = '''
-letter.dims.x = Big:new(letter.dims.x):to_number()
-letter.dims.y = Big:new(letter.dims.y):to_number()
-letter.offset.x = Big:new(letter.offset.x):to_number()
-letter.offset.y = Big:new(letter.offset.y):to_number()
+if Big then
+	letter.dims.x = to_big(letter.dims.x):to_number()
+	letter.dims.y = to_big(letter.dims.y):to_number()
+	letter.offset.x = to_big(letter.offset.x):to_number()
+	letter.offset.y = to_big(letter.offset.y):to_number()
+end
 '''
 match_indent = true
 overwrite = false
@@ -354,8 +360,10 @@ target = "engine/ui.lua"
 pattern = "if _th and _tw then"
 position = "after"
 payload = '''
-_th = Big:new(_th):to_number()
-_tw = Big:new(_tw):to_number()
+if Big then
+	_th = to_big(_th):to_number()
+	_tw = to_big(_tw):to_number()
+end
 '''
 match_indent = true
 overwrite = false
@@ -366,7 +374,7 @@ overwrite = false
 target = "engine/ui.lua"
 pattern = "local _cw, _ch = w:set_wh()"
 position = "after"
-payload = "if G.STATE == G.STATES.MENU then _cw = Big:new(_cw):to_number(); _ch = Big:new(_ch):to_number() end"
+payload = "if Big and G.STATE == G.STATES.MENU then _cw = to_big(_cw):to_number(); _ch = to_big(_ch):to_number() end"
 match_indent = true
 
 [[patches]]
@@ -375,10 +383,10 @@ target = "engine/moveable.lua"
 pattern = "function Moveable:move_wh(dt)"
 position = "after"
 payload = '''
-if G.STATE == G.STATES.MENU then self.T.w = Big:new(self.T.w):to_number()
-self.T.h = Big:new(self.T.h):to_number()
-self.VT.w = Big:new(self.VT.w):to_number()
-self.VT.h = Big:new(self.VT.h):to_number() end
+if Big and G.STATE == G.STATES.MENU then self.T.w = to_big(self.T.w):to_number()
+self.T.h = to_big(self.T.h):to_number()
+self.VT.w = to_big(self.VT.w):to_number()
+self.VT.h = to_big(self.VT.h):to_number() end
 '''
 match_indent = true
 
@@ -388,10 +396,10 @@ target = "functions/misc_functions.lua"
 pattern = "function prep_draw(moveable, scale, rotate, offset)"
 position = "after"
 payload = '''
-if G.STATE == G.STATES.MENU then moveable.VT.x = Big:new(moveable.VT.x):to_number()
-moveable.VT.y = Big:new(moveable.VT.y):to_number()
-moveable.VT.w = Big:new(moveable.VT.w):to_number()
-moveable.VT.h = Big:new(moveable.VT.h):to_number() end
+if Big and G.STATE == G.STATES.MENU then moveable.VT.x = to_big(moveable.VT.x):to_number()
+moveable.VT.y = to_big(moveable.VT.y):to_number()
+moveable.VT.w = to_big(moveable.VT.w):to_number()
+moveable.VT.h = to_big(moveable.VT.h):to_number() end
 '''
 match_indent = true
 
@@ -401,7 +409,7 @@ target = "engine/ui.lua"
 pattern = "if self.config.vert then love.graphics.translate(0,self.VT.h); love.graphics.rotate(-math.pi/2) end"
 position = "before"
 payload = '''
-if G.STATE == G.STATES.MENU then self.config.scale = Big:new(self.config.scale):to_number() end
+if Big and G.STATE == G.STATES.MENU then self.config.scale = to_big(self.config.scale):to_number() end
 '''
 match_indent = true
 
