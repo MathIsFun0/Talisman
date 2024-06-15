@@ -390,7 +390,7 @@ function G:start_up()
   function STR_UNPACK(str)
     local chunk, err = loadstring(str)
     if chunk then
-      setfenv(chunk, {Big = Big, BigMeta = BigMeta})  -- Use an empty environment to prevent access to potentially harmful functions
+      setfenv(chunk, {Big = Big, BigMeta = BigMeta, to_big = to_big})  -- Use an empty environment to prevent access to potentially harmful functions
       local success, result = pcall(chunk)
       if success then
       return result
