@@ -243,9 +243,9 @@ function is_number(x)
   return false
 end
 
-function to_big(x)
-  if Big then return Big:new(x) end
-  return x
+function to_big(x, y)
+  if Big then return Big:new(x, y) end
+  return x * 10^(y or 0)
 end
 
 --patch to remove animations
