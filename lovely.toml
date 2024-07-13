@@ -512,24 +512,3 @@ pattern = "func = (function() if eval_func(card) then if not first or first then
 position = "at"
 payload = "func = (function() if eval_func(card) then if card and card.juice_up then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)"
 match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "cardarea.lua"
-pattern = '''update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname='????', level='?', mult = '?', chips = '?'})'''
-position = "at"
-payload = '''update_hand_text({immediate = true, nopulse = nil, delay = 0}, {handname='????', level=0, mult = 0, chips = 0})'''
-match_indent = true
-
-[[patches]]
-[patches.pattern]
-target = "functions/common_events.lua"
-pattern = '''function update_hand_text(config, vals)'''
-position = "after"
-payload = '''if type(vals.chips) == "string" then
-	vals.chips = 0
-end
-if type(vals.mult) == "string" then
-	vals.mult = 0
-end'''
-match_indent = true

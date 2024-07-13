@@ -13,6 +13,16 @@ function BalaNotation:new()
 end
 
 function BalaNotation:format(n, places)
+    local function e_ify(n)
+        if (n > 10^6) then
+            local exponent = math.floor(math.log(n,10))
+            local mantissa = n/10^exponent
+            mantissa = math.floor(mantissa*10^places+0.5)/10^places
+            return "("..exponent.."e"..mantissa..")"
+        end
+        if n < 1 then return 1 end
+        return n
+    end
     --The notation here is heavily based on Hyper-E notation.
     if to_big(n:log10()) < to_big(100000000) then
         --1.234e56789
@@ -49,21 +59,28 @@ function BalaNotation:format(n, places)
             mantissa = math.floor(mantissa*10^places+0.5)/10^places
             return "e"..mantissa.."e"..exponent
         end
-    elseif not n.array then
+    elseif not n.array or not (n.isFinite and n:isFinite()) then
         return "Infinity"
-    elseif n.array[2] == 3 then
+    elseif n.array[2] == 3 and #n.array == 2 then
         --ee1.234e56789
         local mantissa = 10^(n.array[1]-math.floor(n.array[1]))
         mantissa = math.floor(mantissa*10^places+0.5)/10^places
         local exponent = math.floor(n.array[1])
         return "ee"..mantissa.."e"..exponent
-    elseif n.array[2] and n.array[2] <= 8 then
+    elseif n.array[2] and #n.array == 2 and n.array[2] <= 8 then
         --eeeeeeee56789
         local exponent = math.floor(n.array[1])
         return string.rep("e", n.array[2])..exponent
+    elseif #n.array < 8 then
+        --e12#34#56#78
+        local r = "e"..e_ify(math.floor(n.array[1]*10^places+0.5)/10^places).."#"..n.array[2]
+        for i = 3, #n.array do
+            r = r.."#"..(n.array[i]+1)
+        end
+        return r
     else
-        --default case
-        return n:toString()
+        --e12#34##5678
+        return "e"..e_ify(math.floor(n.array[1]*10^places+0.5)/10^places).."#"..n.array[#n.array].."##"..(#n.array-2)
     end
 end
 

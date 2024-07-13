@@ -389,11 +389,11 @@ function Big:parse(input)
                     arrows=tonumber(string.sub(input, 4, a - 1))+1;
                     b = a + 1
                 end
-                if (arrows >= maxArrow) then
+                --[[if (arrows >= maxArrow) then
                 -- console.warn("Number too large to reasonably handle it: tried to "+arrows.add(2)+"-ate.");
                     x.array = {R.POSITIVE_INFINITY};
                     break;
-                end
+                end--]]
                 input = string.sub(input, b + 1);
                 if (string.sub(input, 1, 1) == ")") then
                     a = 1
@@ -489,7 +489,7 @@ function Big:parse(input)
                 if (intPartLen - 1 >= LONG_STRING_MIN_LENGTH) then
                     d = log10LongString(string.sub(a[i], 1,intPartLen - 1))
                 else
-                    if (a[i] ~= nil) and (a[i] ~= "") then
+                    if (a[i] ~= nil) and (a[i] ~= "") and (tonumber(a[i]) ~= nil) then
                         d = math.log(tonumber(a[i]), 10)
                     else
                         d = 0
@@ -1085,9 +1085,9 @@ function Big:arrow(arrows, other)
     if (other:eq(R.ONE)) then
         return t:clone()
     end
-    if (arrows:gte(maxArrow)) then
+    --[[if (arrows:gte(maxArrow)) then
         return Big:create(R.POSITIVE_INFINITY)
-    end
+    end--]]
     local arrowsNum = arrows:to_number()
     if (other:eq(2)) then
         return t:arrow(arrows:sub(R.ONE), t)
@@ -1102,7 +1102,7 @@ function Big:arrow(arrows, other)
             r.array[arrowsNum + 1] = r.array[arrowsNum + 1] - 1
             r:normalize()
         elseif (t:gt("10{"..tostring(arrowsNum - 1).."}"..tostring(R.MAX_SAFE_INTEGER))) then
-            r = Big:create(t.array[arrowsNum+1])
+            r = Big:create(t.array[arrowsNum])
         else
             r = Big:create(R.ZERO)
         end

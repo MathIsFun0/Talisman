@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [MathIsFun_, Mathguy24]
 --- MOD_DESCRIPTION: A mod that increases Balatro's score limit.
 --- PREFIX: talisman
---- VERSION: 2.0.0-alpha1
+--- VERSION: 2.0.0-alpha2
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -30,13 +30,17 @@ end
   loc_txt = {
       name = "Infinitus",
       text = {
-        "{C:mult,R:1}+eeeeeee308{} Mult"
+        "{C:mult,E:1}+10#2#1000#3#10{} Mult"
       }
   },
+  loc_vars = function(self, info_queue, center)
+    return {vars = {"#","{","}"}}
+  end,
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and not context.before and not context.after then
+          local mult = Big:create(10):arrow(1000,10)
           return {
-              mult_mod = Big:create("eeeeeee308"),
+              mult_mod = mult,
               colour = G.C.RED,
               message = "!"
           }
