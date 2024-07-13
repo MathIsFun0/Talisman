@@ -50,7 +50,7 @@ G.FUNCS.talismanMenu = function(e)
                   label = "Score Limit (requires game restart)",
                   scale = 0.8,
                   w = 6,
-                  options = {"Vanilla (e308)", "BigNum (ee308)", "OmegaNum (10{1000}10)"},
+                  options = {"Vanilla (e308)", "BigNum (ee308)", "OmegaNum (e10##1000)"},
                   opt_callback = 'talisman_upd_score_opt',
                   current_option = Talisman.config_file.score_opt_id,
                 })}
@@ -82,6 +82,7 @@ G.FUNCS.talisman_upd_score_opt = function(e)
   Talisman.config_file.score_opt_id = e.to_key
   local score_opts = {"", "bignumber", "omeganum"}
   Talisman.config_file.break_infinity = score_opts[e.to_key]
+  nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
 end
 if Talisman.config_file.break_infinity then
   Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/"..Talisman.config_file.break_infinity..".lua")()
@@ -102,11 +103,8 @@ if Talisman.config_file.break_infinity then
           G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
           if num < to_big(G.E_SWITCH_POINT) then
               return nf(num:to_number())
-          --temporary before we get to formats
-          elseif num.toString then
-            return num:toString()
           else
-            return num:to_string()
+            return Notations.Balatro:format(num, 3)
           end
       else return nf(num) end
   end
@@ -258,7 +256,7 @@ end
 
 function is_number(x)
   if type(x) == 'number' then return true end
-  if (BigMeta or OmegaMeta) and (getmetatable(x) == BigMeta or getmetatable(x) == OmegaMeta) then return true end
+  if type(x) == 'table' and ((x.e and x.m) or (x.array and x.sign)) then return true end
   return false
 end
 

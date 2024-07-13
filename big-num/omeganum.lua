@@ -316,6 +316,10 @@ function Big:toString()
     return s
 end
 
+function Big:to_string()
+    return self:toString()
+end
+
 function log10LongString(str) 
     return math.log(tonumber(string.sub(str, 1, LONG_STRING_MIN_LENGTH)), 10)+(string.len(str)- LONG_STRING_MIN_LENGTH);
 end
