@@ -49,19 +49,21 @@ function BalaNotation:format(n, places)
             mantissa = math.floor(mantissa*10^places+0.5)/10^places
             return "e"..mantissa.."e"..exponent
         end
+    elseif not n.array then
+        return "Infinity"
     elseif n.array[2] == 3 then
         --ee1.234e56789
         local mantissa = 10^(n.array[1]-math.floor(n.array[1]))
         mantissa = math.floor(mantissa*10^places+0.5)/10^places
         local exponent = math.floor(n.array[1])
         return "ee"..mantissa.."e"..exponent
-    elseif n.array[2] <= 8 then
+    elseif n.array[2] and n.array[2] <= 8 then
         --eeeeeeee56789
         local exponent = math.floor(n.array[1])
-        return string.rep("e", self.array[2])..exponent
+        return string.rep("e", n.array[2])..exponent
     else
         --default case
-        return n:to_string()
+        return n:toString()
     end
 end
 
