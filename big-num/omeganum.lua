@@ -185,7 +185,7 @@ end
 function Big:normalize()
     local b = nil
     local x = self
-    if ((x.array == nil) or (#x.array == 0)) then
+    if ((x.array == nil) or (type(x.array) ~= "table") or (#x.array == 0)) then
         x.array = {0}
     end
     if (#x.array == 1) and (x.array[1] == 0) then
