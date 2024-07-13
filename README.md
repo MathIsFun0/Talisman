@@ -1,5 +1,5 @@
 # Talisman
-A mod for Balatro that increases the score cap from ~10^308 to ~10^10^308, allowing for endless runs to go past "naneinf" and Ante 39, and removes the long animations that come with these scores.
+A mod for Balatro that increases the score cap from ~10^308 to ~10{1000}10, allowing for endless runs to go past "naneinf" and Ante 39, and removes the long animations that come with these scores.
 
 The large number representation used by Talisman is a modified version of [this](https://github.com/veprogames/lua-big-number) library by veprogames.
 
