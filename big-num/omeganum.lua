@@ -34,6 +34,7 @@ R.SQRT1_2 = math.sqrt(0.5)
 R.SQRT2 = math.sqrt(2)
 R.MAX_SAFE_INTEGER=MAX_SAFE_INTEGER
 R.MIN_SAFE_INTEGER=-9007199254740992
+R.MAX_DISP_INTEGER=1000000
 R.NaN=0/0
 R.NEGATIVE_INFINITY = -1/0
 R.POSITIVE_INFINITY = 1/0
@@ -235,7 +236,7 @@ function Big:normalize()
             x.array[#x.array] = nil;
             b=true;
         end
-        if (x.array[1] > R.MAX_SAFE_INTEGER) then
+        if (x.array[1] > R.MAX_DISP_INTEGER) then --modified, should make printed values easier to display
             x.array[2]=(x.array[2] or 0) + 1;
             x.array[1]= math.log(x.array[1], 10);
             b=true;
