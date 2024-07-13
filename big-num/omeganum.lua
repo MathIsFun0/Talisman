@@ -241,7 +241,7 @@ function Big:normalize()
             x.array[1]= math.log(x.array[1], 10);
             b=true;
         end
-        while ((x.array[1] < MAX_E) and ((x.array[2] ~= nil) and (x.array[2] ~= 0))) do
+        while ((x.array[1] < math.log(R.MAX_DISP_INTEGER,10)) and ((x.array[2] ~= nil) and (x.array[2] ~= 0))) do
             x.array[1] = math.pow(10,x.array[1], 10);
             x.array[2] = x.array[2] - 1
             b=true;
@@ -315,10 +315,6 @@ function Big:toString()
         s = s .. "(10^)^" .. AThousandNotation(self.array[2], 0) .. " " .. AThousandNotation(self.array[1],0)
     end
     return s
-end
-
-function Big:to_string()
-    return self:toString()
 end
 
 function log10LongString(str) 

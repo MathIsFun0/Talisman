@@ -130,7 +130,9 @@ if Talisman.config_file.break_infinity then
 
   -- There's too much to override here so we just fully replace this function
   -- Note that any ante scaling tweaks will need to manually changed...
+  local gba = get_blind_amount
   function get_blind_amount(ante)
+    if type(ante) == 'number' then return gba(ante) end
       local k = to_big(0.75)
       if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
         local amounts = {
