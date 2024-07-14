@@ -85,7 +85,8 @@ G.FUNCS.talisman_upd_score_opt = function(e)
   nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
 end
 if Talisman.config_file.break_infinity then
-  Big = nativefs.load(lovely.mod_dir.."/Talisman/big-num/"..Talisman.config_file.break_infinity..".lua")()
+  Big, err = nativefs.load(lovely.mod_dir.."/Talisman/big-num/"..Talisman.config_file.break_infinity..".lua")
+  if not err then Big = Big() else Big = nil end
   Notations = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations.lua")()
   -- We call this after init_game_object to leave room for mods that add more poker hands
   Talisman.igo = function(obj)
@@ -132,7 +133,7 @@ if Talisman.config_file.break_infinity then
   -- Note that any ante scaling tweaks will need to manually changed...
   local gba = get_blind_amount
   function get_blind_amount(ante)
-    if type(ante) == 'number' then return gba(ante) end
+    if type(to_big(1)) == 'number' then return gba(ante) end
       local k = to_big(0.75)
       if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
         local amounts = {
@@ -193,7 +194,9 @@ if Talisman.config_file.break_infinity then
     end--]] --going to hold off on modifying this until proper save loading exists
   end
 
+  local sn = scale_number
   function scale_number(number, scale, max)
+    if not Big then return sn(number, scale, max) end
     scale = to_big(scale)
     G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
     if not number or not is_number(number) then return scale end
@@ -263,9 +266,9 @@ function is_number(x)
 end
 
 function to_big(x, y)
-  if Big.m then
+  if Big and Big.m then
     return Big:new(x,y)
-  elseif Big.array then
+  elseif Big and Big.array then
     local result = Big:create(x)
     result.sign = y or result.sign or x.sign or 1
     return result

@@ -24,7 +24,7 @@ function BalaNotation:format(n, places)
         return n
     end
     --The notation here is heavily based on Hyper-E notation.
-    if to_big(n:log10()) < to_big(100000000) then
+    if to_big(n:log10()) < to_big(1000000) then
         --1.234e56789
         if n.m then --BigNum
             local mantissa = math.floor(n.m*10^places+0.5)/10^places
@@ -41,7 +41,7 @@ function BalaNotation:format(n, places)
             mantissa = math.floor(mantissa*10^places+0.5)/10^places
             return mantissa.."e"..exponent
         end
-    elseif to_big(n:log10()) < to_big(10)^10000000 then
+    elseif to_big(n:log10()) < to_big(10)^1000000 then
         --e1.234e56789
         if n.m then --BigNum
             local exponent = math.floor(math.log(n.e,10))
