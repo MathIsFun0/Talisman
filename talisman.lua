@@ -144,8 +144,8 @@ if Talisman.config_file.break_infinity then
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
         if (amount:lt(R.MAX_SAFE_INTEGER)) then
-          local exponent = 10^(math.floor(amount:log10() - 1)):to_number()
-          amount =  Big:create({math.floor(amount / exponent):to_number() * exponent})
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
+          amount = math.floor(amount / exponent):to_number() * exponent
         end
         amount:normalize()
         return amount
@@ -159,8 +159,8 @@ if Talisman.config_file.break_infinity then
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
         if (amount:lt(R.MAX_SAFE_INTEGER)) then
-          local exponent = 10^(math.floor(amount:log10() - 1)):to_number()
-          amount =  Big:create({math.floor(amount / exponent):to_number() * exponent})
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
+          amount = math.floor(amount / exponent):to_number() * exponent
         end
         amount:normalize()
         return amount
@@ -174,8 +174,8 @@ if Talisman.config_file.break_infinity then
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
         if (amount:lt(R.MAX_SAFE_INTEGER)) then
-          local exponent = 10^(math.floor(amount:log10() - 1)):to_number()
-          amount =  Big:create({math.floor(amount / exponent):to_number() * exponent})
+          local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
+          amount = math.floor(amount / exponent):to_number() * exponent
         end
         amount:normalize()
         return amount
