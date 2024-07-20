@@ -513,6 +513,22 @@ position = "at"
 payload = "func = (function() if eval_func(card) then if card and card.juice_up then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)"
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "func = (function() if eval_func(card) then if not first or first then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)"
+position = "at"
+payload = "func = (function() if eval_func(card) then if card and card.juice_up then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "if G.FILE_HANDLER.run then"
+position = "at"
+payload = "if G.FILE_HANDLER.run and G.ARGS.save_run then"
+match_indent = true
+
 # replace save manager with version that works with Talisman saves
 [[patches]]
 [patches.pattern]
