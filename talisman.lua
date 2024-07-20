@@ -103,7 +103,7 @@ if Talisman.config_file.break_infinity then
   end
 
   local nf = number_format
-  function number_format(num)
+  function number_format(num, e_switch_point)
       if type(num) == 'table' then
           num = to_big(num)
           G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
@@ -112,7 +112,7 @@ if Talisman.config_file.break_infinity then
           else
             return Notations.Balatro:format(num, 3)
           end
-      else return nf(num) end
+      else return nf(num, e_switch_point) end
   end
 
   local mf = math.floor
