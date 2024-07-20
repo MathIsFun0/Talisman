@@ -33,7 +33,7 @@ name = "nativefs"
 target = "functions/UI_definitions.lua"
 pattern = "{n=G.UIT.T, config={text = G.GAME.hands[handname].chips, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},"
 position = "at"
-payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].chips), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},"
+payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].chips, 1000000), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}},"
 match_indent = true
 overwrite = true
 
@@ -42,7 +42,7 @@ overwrite = true
 target = "functions/UI_definitions.lua"
 pattern = "{n=G.UIT.T, config={text = G.GAME.hands[handname].mult, scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}"
 position = "at"
-payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].mult), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}"
+payload = "{n=G.UIT.T, config={text = number_format(G.GAME.hands[handname].mult, 1000000), scale = 0.45, colour = G.C.UI.TEXT_LIGHT}}"
 match_indent = true
 overwrite = true
 
