@@ -555,15 +555,15 @@ target = "functions/state_events.lua"
 pattern = "if effect.Xmult_mod then mult = mod_mult(mult*effect.Xmult_mod);extras.mult = true  end"
 position = "after"
 payload = '''
-if effects.Emult_mod then mult = mod_mult(mult^effects.Emult_mod);extras.mult = true end
-if effects.EEmult_mod then mult = mod_mult(mult:arrow(2, effects.EEmult_mod));extras.mult = true end
-if effects.EEEmult_mod then mult = mod_mult(mult:arrow(3, effects.EEEmult_mod));extras.mult = true end
-if effects.Hmult_mod and type(effects.Hmult_mod) == 'table' then mult = mod_mult(mult:arrow(effects.Hmult_mod[1], effects.Hmult_mod[2]));extras.mult = true end
-if effects.Xchip_mod then hand_chips = mod_chips(hand_chips*effects.Xchip_mod);extras.hand_chips = true end
-if effects.Echip_mod then hand_chips = mod_chips(hand_chips^effects.Echip_mod);extras.hand_chips = true end
-if effects.EEchip_mod then hand_chips = mod_chips(hand_chips:arrow(2, effects.EEchip_mod));extras.hand_chips = true end
-if effects.EEEchip_mod then hand_chips = mod_chips(hand_chips:arrow(3, effects.EEEchip_mod));extras.hand_chips = true end
-if effects.Hchip_mod and type(effects.Hchip_mod) == 'table' then hand_chips = mod_chips(hand_chips:arrow(effects.Hchip_mod[1], effects.Hchip_mod[2]));extras.hand_chips = true end
+if effect.Emult_mod then mult = mod_mult(mult^effect.Emult_mod);extras.mult = true end
+if effect.EEmult_mod then mult = mod_mult(mult:arrow(2, effect.EEmult_mod));extras.mult = true end
+if effect.EEEmult_mod then mult = mod_mult(mult:arrow(3, effect.EEEmult_mod));extras.mult = true end
+if effect.Hmult_mod and type(effect.Hmult_mod) == 'table' then mult = mod_mult(mult:arrow(effect.Hmult_mod[1], effect.Hmult_mod[2]));extras.mult = true end
+if effect.Xchip_mod then hand_chips = mod_chips(hand_chips*effect.Xchip_mod);extras.hand_chips = true end
+if effect.Echip_mod then hand_chips = mod_chips(hand_chips^effect.Echip_mod);extras.hand_chips = true end
+if effect.EEchip_mod then hand_chips = mod_chips(hand_chips:arrow(2, effect.EEchip_mod));extras.hand_chips = true end
+if effect.EEEchip_mod then hand_chips = mod_chips(hand_chips:arrow(3, effect.EEEchip_mod));extras.hand_chips = true end
+if effect.Hchip_mod and type(effect.Hchip_mod) == 'table' then hand_chips = mod_chips(hand_chips:arrow(effect.Hchip_mod[1], effect.Hchip_mod[2]));extras.hand_chips = true end
 '''
 match_indent = true
 
