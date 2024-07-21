@@ -731,56 +731,56 @@ if effects[ii].e_chips then
 	if effects[ii].card then juice_card(effects[ii].card) end
 	chips = mod_chips(chips^effects[ii].e_chips)
 	update_hand_text({delay = 0}, {chips = chips})
-	card_eval_status_text(G.hand.cards[i], 'e_chips', effects[ii].e_chips, percent)
+	card_eval_status_text(scoring_hand[i], 'e_chips', effects[ii].e_chips, percent)
 end
 if effects[ii].ee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	chips = mod_chips(chips:arrow(2, effects[ii].ee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
-	card_eval_status_text(G.hand.cards[i], 'ee_chips', effects[ii].ee_chips, percent)
+	card_eval_status_text(scoring_hand[i], 'ee_chips', effects[ii].ee_chips, percent)
 end
 if effects[ii].eee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	chips = mod_chips(chips:arrow(3, effects[ii].eee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
-	card_eval_status_text(G.hand.cards[i], 'eee_chips', effects[ii].eee_chips, percent)
+	card_eval_status_text(scoring_hand[i], 'eee_chips', effects[ii].eee_chips, percent)
 end
 if effects[ii].hyper_chips and type(effects[ii].hyper_chips) == 'table' then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	chips = mod_chips(chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
 	update_hand_text({delay = 0}, {chips = chips})
-	card_eval_status_text(G.hand.cards[i], 'hyper_chips', effects[ii].hyper_chips, percent)
+	card_eval_status_text(scoring_hand[i], 'hyper_chips', effects[ii].hyper_chips, percent)
 end
 if effects[ii].e_mult then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	mult = mod_mult(mult^effects[ii].e_mult)
 	update_hand_text({delay = 0}, {mult = mult})
-	card_eval_status_text(G.hand.cards[i], 'e_mult', effects[ii].e_mult, percent)
+	card_eval_status_text(scoring_hand[i], 'e_mult', effects[ii].e_mult, percent)
 end
 if effects[ii].ee_mult then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	mult = mod_mult(mult:arrow(2, effects[ii].ee_mult))
 	update_hand_text({delay = 0}, {mult = mult})
-	card_eval_status_text(G.hand.cards[i], 'ee_mult', effects[ii].ee_mult, percent)
+	card_eval_status_text(scoring_hand[i], 'ee_mult', effects[ii].ee_mult, percent)
 end
 if effects[ii].eee_mult then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	mult = mod_mult(mult:arrow(3, effects[ii].eee_mult))
 	update_hand_text({delay = 0}, {mult = mult})
-	card_eval_status_text(G.hand.cards[i], 'eee_mult', effects[ii].eee_mult, percent)
+	card_eval_status_text(scoring_hand[i], 'eee_mult', effects[ii].eee_mult, percent)
 end
 if effects[ii].hyper_mult and type(effects[ii].hyper_mult) == 'table' then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	mult = mod_mult(mult:arrow(effects[ii].hyper_mult[1], effects[ii].hyper_mult[2]))
 	update_hand_text({delay = 0}, {mult = mult})
-	card_eval_status_text(G.hand.cards[i], 'hyper_mult', effects[ii].hyper_mult, percent)
+	card_eval_status_text(scoring_hand[i], 'hyper_mult', effects[ii].hyper_mult, percent)
 end
 
 '''
