@@ -4,7 +4,7 @@
 --- MOD_AUTHOR: [MathIsFun_, Mathguy24]
 --- MOD_DESCRIPTION: A mod that increases Balatro's score limit.
 --- PREFIX: talisman
---- VERSION: 2.0.0-beta1
+--- VERSION: 2.0.0-beta2
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -18,6 +18,37 @@ if SMODS.Atlas then
     px = 32,
     py = 32
   })
+end
+
+if SMODS.Sound then
+	SMODS.Sound({
+		key = "xchip",
+		path = "MultiplicativeChips.wav"
+	})
+	SMODS.Sound({
+		key = "echip",
+		path = "ExponentialChips.wav"
+	})
+	SMODS.Sound({
+		key = "eechip",
+		path = "TetrationalChips.wav"
+	})
+	SMODS.Sound({
+		key = "eeechip",
+		path = "PentationalChips.wav"
+	})
+	SMODS.Sound({
+		key = "emult",
+		path = "ExponentialMult.wav"
+	})
+	SMODS.Sound({
+		key = "eemult",
+		path = "TetrationalMult.wav"
+	})
+	SMODS.Sound({
+		key = "eeemult",
+		path = "PentationalMult.wav"
+	})
 end
 
 --[[SMODS.Joker{

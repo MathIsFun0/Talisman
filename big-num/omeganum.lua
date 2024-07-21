@@ -553,6 +553,13 @@ function Big:floor()
     return Big:create(math.floor(self:to_number()));
 end
 
+function Big:ceil()
+    if (self:isint()) then
+        return self:clone()
+    end
+    return Big:create(math.ceil(self:to_number()));
+end
+
 function Big:clone()
     local newArr = {}
     for i, j in ipairs(self.array) do
