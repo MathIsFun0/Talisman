@@ -786,6 +786,176 @@ end
 '''
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = 'if effects[ii].edition then'
+position = 'after'
+match_indent = true
+payload = '''
+if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
+	local trg = scoring_hand[i]
+	local edi = trg.edition
+	if edi.x_chips then
+		hand_chips = mod_chips(hand_chips * edi.x_chips)
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = 'X'.. edi.x_chips ..' Chips',
+		edition = true,
+		x_chips = true})
+	end
+	if edi.e_chips then
+		hand_chips = mod_chips(hand_chips ^ edi.e_chips)
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^'.. edi.e_chips ..' Chips',
+		edition = true,
+		e_chips = true})
+	end
+	if edi.ee_chips then
+		hand_chips = mod_chips(hand_chips:arrow(2, edi.ee_chips))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^'.. edi.ee_chips ..' Chips',
+		edition = true,
+		ee_chips = true})
+	end
+	if edi.eee_chips then
+		hand_chips = mod_chips(hand_chips:arrow(3, edi.eee_chips))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^^'.. edi.eee_chips ..' Chips',
+		edition = true,
+		eee_chips = true})
+	end
+	if edi.h_chips and type(edi.h_chips) == 'table' then
+		hand_chips = mod_chips(hand_chips:arrow(edi.h_chips[1], edi.h_chips[2]))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = (edi.h_chips[1] > 5 and ('{' .. edi.h_chips[1] .. '}') or string.rep('^', edi.h_chips[1])) .. edi.h_chips[2] ..' Chips',
+		edition = true,
+		eee_chips = true})
+	end
+	if edi.e_mult then
+		mult = mod_mult(mult ^ edi.e_mult)
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^'.. edi.e_mult ..' Mult',
+		edition = true,
+		e_mult = true})
+	end
+	if edi.ee_mult then
+		mult = mod_mult(mult:arrow(2, edi.ee_mult))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^'.. edi.ee_mult ..' Mult',
+		edition = true,
+		ee_mult = true})
+	end
+	if edi.eee_mult then
+		mult = mod_mult(mult:arrow(3, edi.eee_mult))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^^'.. edi.eee_mult ..' Mult',
+		edition = true,
+		eee_mult = true})
+	end
+	if edi.h_mult and type(edi.h_mult) == 'table' then
+		mult = mod_mult(mult:arrow(edi.h_mult[1], edi.h_mult[2]))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = (edi.h_mult[1] > 5 and ('{' .. edi.h_mult[1] .. '}') or string.rep('^', edi.h_mult[1])) .. edi.h_mult[2] ..' Mult',
+		edition = true,
+		h_mult = true})
+	end
+end
+'''
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = 'if edition_effects.jokers.x_mult_mod then'
+position = 'before'
+match_indent = true
+payload = '''
+if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
+	local trg = G.jokers.cards[i]
+	local edi = trg.edition
+	if edi.x_chips then
+		hand_chips = mod_chips(hand_chips * edi.x_chips)
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = 'X'.. edi.x_chips ..' Chips',
+		edition = true,
+		x_chips = true})
+	end
+	if edi.e_chips then
+		hand_chips = mod_chips(hand_chips ^ edi.e_chips)
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^'.. edi.e_chips ..' Chips',
+		edition = true,
+		e_chips = true})
+	end
+	if edi.ee_chips then
+		hand_chips = mod_chips(hand_chips:arrow(2, edi.ee_chips))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^'.. edi.ee_chips ..' Chips',
+		edition = true,
+		ee_chips = true})
+	end
+	if edi.eee_chips then
+		hand_chips = mod_chips(hand_chips:arrow(3, edi.eee_chips))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^^'.. edi.eee_chips ..' Chips',
+		edition = true,
+		eee_chips = true})
+	end
+	if edi.h_chips and type(edi.h_chips) == 'table' then
+		hand_chips = mod_chips(hand_chips:arrow(edi.h_chips[1], edi.h_chips[2]))
+		update_hand_text({delay = 0}, {chips = hand_chips})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = (edi.h_chips[1] > 5 and ('{' .. edi.h_chips[1] .. '}') or string.rep('^', edi.h_chips[1])) .. edi.h_chips[2] ..' Chips',
+		edition = true,
+		eee_chips = true})
+	end
+	if edi.e_mult then
+		mult = mod_mult(mult ^ edi.e_mult)
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^'.. edi.e_mult ..' Mult',
+		edition = true,
+		e_mult = true})
+	end
+	if edi.ee_mult then
+		mult = mod_mult(mult:arrow(2, edi.ee_mult))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^'.. edi.ee_mult ..' Mult',
+		edition = true,
+		ee_mult = true})
+	end
+	if edi.eee_mult then
+		mult = mod_mult(mult:arrow(3, edi.eee_mult))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = '^^^'.. edi.eee_mult ..' Mult',
+		edition = true,
+		eee_mult = true})
+	end
+	if edi.h_mult and type(edi.h_mult) == 'table' then
+		mult = mod_mult(mult:arrow(edi.h_mult[1], edi.h_mult[2]))
+		update_hand_text({delay = 0}, {mult = mult})
+		card_eval_status_text(trg, 'extra', nil, percent, nil,
+		{message = (edi.h_mult[1] > 5 and ('{' .. edi.h_mult[1] .. '}') or string.rep('^', edi.h_mult[1])) .. edi.h_mult[2] ..' Mult',
+		edition = true,
+		h_mult = true})
+	end
+end
+'''
+
 # replace save manager with version that works with Talisman saves
 [[patches]]
 [patches.pattern]
