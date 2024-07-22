@@ -102,6 +102,24 @@ payload = "if to_big(G.GAME.current_round.current_hand.chip_total) < to_big(1) t
 match_indent = true
 overwrite = true
 
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "ease_chips(0)"
+position = "at"
+payload = "ease_chips(to_big(0))"
+match_indent = true
+overwrite = true
+
+[[patches]]
+[patches.pattern]
+target = "game.lua"
+pattern = "chips = 0,"
+position = "at"
+payload = "chips = to_big(0),"
+match_indent = true
+overwrite = true
+
 # Patch for Steamodded Sound API
 [[patches]]
 [patches.pattern]
