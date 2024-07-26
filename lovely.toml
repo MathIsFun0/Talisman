@@ -539,13 +539,13 @@ position = "at"
 payload = "func = (function() if eval_func(card) then if card and card.juice_up then card:juice_up(0.1, 0.1) end;juice_card_until(card, eval_func, nil, 0.8) end return true end)"
 match_indent = true
 
-# Attempt to fix a crash
+# return eval_round value
 [[patches]]
 [patches.pattern]
-target = "game.lua"
-pattern = "if G.FILE_HANDLER.run then"
-position = "at"
-payload = "if G.FILE_HANDLER.run and {type = 'save_run', save_table = G.ARGS.save_run, profile_num = G.SETTINGS.profile} then"
+target = "functions/state_events.lua"
+pattern = "add_round_eval_row({name = 'bottom', dollars = dollars})"
+position = "after"
+payload = "return dollars"
 match_indent = true
 
 # arbitrary operations on chips and mult
