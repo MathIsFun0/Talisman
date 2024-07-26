@@ -451,6 +451,25 @@ function G:start_up()
     end
 end
 
+--Skip round animation things
+local gfer = G.FUNCS.evaluate_round
+function G.FUNCS.evaluate_round()
+    if Talisman.config_file.disable_anims then
+      if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
+          add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = 0.95})
+      else
+          add_round_eval_row({dollars = 0, name='blind1', pitch = 0.95, saved = true})
+      end
+      local arer = add_round_eval_row
+      add_round_eval_row = function() return end
+      local dollars = gfer()
+      add_round_eval_row = arer
+      add_round_eval_row({name = 'bottom', dollars = Talisman.dollars})
+    else
+        return gfer()
+    end
+end
+
 --some debugging functions
 --[[local callstep=0
 function printCallerInfo()
