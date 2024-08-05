@@ -200,8 +200,8 @@ if Talisman.config_file.break_infinity then
   end
 
   local sn = scale_number
-  function scale_number(number, scale, max)
-    if not Big then return sn(number, scale, max) end
+  function scale_number(number, scale, max, e_switch_point)
+    if not Big then return sn(number, scale, max, e_switch_point) end
     scale = to_big(scale)
     G.E_SWITCH_POINT = G.E_SWITCH_POINT or 100000000000
     if not number or not is_number(number) then return scale end
@@ -209,7 +209,7 @@ if Talisman.config_file.break_infinity then
     if to_big(number).e and to_big(number).e == 10^1000 then
       scale = scale*math.floor(math.log(max*10, 10))/7
     end
-    if to_big(number) >= to_big(G.E_SWITCH_POINT) then
+    if to_big(number) >= to_big(e_switch_point or G.E_SWITCH_POINT) then
       if (to_big(to_big(number):log10()) <= to_big(999)) then
         scale = scale*math.floor(math.log(max*10, 10))/math.floor(math.log(1000000*10, 10))
       else
