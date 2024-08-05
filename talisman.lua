@@ -262,6 +262,20 @@ if Talisman.config_file.break_infinity then
     end
     return sqrt(x)
   end
+
+ 
+
+  local old_abs = math.abs
+  function math.abs(x)
+    if type(x) == 'table' then
+    x = to_big(x)
+    if (x < to_big(0)) then
+      return -1 * x
+    else
+      return x
+    end
+    else return old_abs(x) end
+  end
 end
 
 function is_number(x)
