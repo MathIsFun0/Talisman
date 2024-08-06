@@ -4,12 +4,10 @@
 --- MOD_AUTHOR: [MathIsFun_, Mathguy24]
 --- MOD_DESCRIPTION: A mod that increases Balatro's score limit.
 --- PREFIX: talisman
---- VERSION: 2.0.0-beta2
+--- VERSION: 2.0.0-beta3
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
-
--- This code doesn't do anything besides making Talisman appear in Steamodded and show a mod icon in v1.0.0+
 
 if SMODS.Atlas then
   SMODS.Atlas({

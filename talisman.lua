@@ -262,6 +262,20 @@ if Talisman.config_file.break_infinity then
     end
     return sqrt(x)
   end
+
+ 
+
+  local old_abs = math.abs
+  function math.abs(x)
+    if type(x) == 'table' then
+    x = to_big(x)
+    if (x < to_big(0)) then
+      return -1 * x
+    else
+      return x
+    end
+    else return old_abs(x) end
+  end
 end
 
 function is_number(x)
@@ -448,6 +462,25 @@ function G:start_up()
       print("Error loading string: " .. err)
       return nil
     end
+    end
+end
+
+--Skip round animation things
+local gfer = G.FUNCS.evaluate_round
+function G.FUNCS.evaluate_round()
+    if Talisman.config_file.disable_anims then
+      if to_big(G.GAME.chips) >= to_big(G.GAME.blind.chips) then
+          add_round_eval_row({dollars = G.GAME.blind.dollars, name='blind1', pitch = 0.95})
+      else
+          add_round_eval_row({dollars = 0, name='blind1', pitch = 0.95, saved = true})
+      end
+      local arer = add_round_eval_row
+      add_round_eval_row = function() return end
+      local dollars = gfer()
+      add_round_eval_row = arer
+      add_round_eval_row({name = 'bottom', dollars = Talisman.dollars})
+    else
+        return gfer()
     end
 end
 
