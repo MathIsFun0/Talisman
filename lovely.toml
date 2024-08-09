@@ -665,31 +665,31 @@ position = "before"
 payload = '''
 if effects[ii].x_chips then
 	mod_percent = true
-	chips = mod_chips(chips*effects[ii].x_chips)
+	hand_chips = mod_chips(hand_chips*effects[ii].x_chips)
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(G.hand.cards[i], 'x_chips', effects[ii].x_chips, percent)
 end
 if effects[ii].e_chips then
 	mod_percent = true
-	chips = mod_chips(chips^effects[ii].e_chips)
+	hand_chips = mod_chips(hand_chips^effects[ii].e_chips)
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(G.hand.cards[i], 'e_chips', effects[ii].e_chips, percent)
 end
 if effects[ii].ee_chips then
 	mod_percent = true
-	chips = mod_chips(chips:arrow(2, effects[ii].ee_chips))
+	hand_chips = mod_chips(hand_chips:arrow(2, effects[ii].ee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(G.hand.cards[i], 'ee_chips', effects[ii].ee_chips, percent)
 end
 if effects[ii].eee_chips then
 	mod_percent = true
-	chips = mod_chips(chips:arrow(3, effects[ii].eee_chips))
+	hand_chips = mod_chips(hand_chips:arrow(3, effects[ii].eee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(G.hand.cards[i], 'eee_chips', effects[ii].eee_chips, percent)
 end
 if effects[ii].hyper_chips and type(effects[ii].hyper_chips) == 'table' then
 	mod_percent = true
-	chips = mod_chips(chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
+	hand_chips = mod_chips(hand_chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(G.hand.cards[i], 'hyper_chips', effects[ii].hyper_chips, percent)
 end
@@ -740,35 +740,35 @@ payload = '''
 if effects[ii].x_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	chips = mod_chips(mult*effects[ii].x_chips)
+	hand_chips = mod_chips(mult*effects[ii].x_chips)
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(scoring_hand[i], 'x_chips', effects[ii].x_chips, percent)
 end
 if effects[ii].e_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	chips = mod_chips(chips^effects[ii].e_chips)
+	hand_chips = mod_chips(hand_chips^effects[ii].e_chips)
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(scoring_hand[i], 'e_chips', effects[ii].e_chips, percent)
 end
 if effects[ii].ee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	chips = mod_chips(chips:arrow(2, effects[ii].ee_chips))
+	hand_chips = mod_chips(hand_chips:arrow(2, effects[ii].ee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(scoring_hand[i], 'ee_chips', effects[ii].ee_chips, percent)
 end
 if effects[ii].eee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	chips = mod_chips(chips:arrow(3, effects[ii].eee_chips))
+	hand_chips = mod_chips(hand_chips:arrow(3, effects[ii].eee_chips))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(scoring_hand[i], 'eee_chips', effects[ii].eee_chips, percent)
 end
 if effects[ii].hyper_chips and type(effects[ii].hyper_chips) == 'table' then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	chips = mod_chips(chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
+	hand_chips = mod_chips(hand_chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
 	update_hand_text({delay = 0}, {chips = chips})
 	card_eval_status_text(scoring_hand[i], 'hyper_chips', effects[ii].hyper_chips, percent)
 end
