@@ -49,6 +49,7 @@ if SMODS.Sound then
 	})
 end
 
+SMODS.current_mod.config_tab = Talisman.config_tab
 --[[SMODS.Joker{
   key = "test",
   name = "Joker Test",
