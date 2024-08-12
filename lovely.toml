@@ -591,6 +591,13 @@ target = "functions/common_events.lua"
 pattern = "elseif eval_type == 'dollars' then"
 position = "before"
 payload = '''
+elseif eval_type == 'h_chips' then 
+	sound = 'chips1'
+	amt = amt
+	colour = G.C.CHIPS
+	text = localize{type='variable',key='a_chips',vars={amt}}
+    config.type = 'fade'
+	delay = 0.7
 elseif eval_type == 'x_chips' then 
 	sound = 'talisman_xchip'
 	amt = amt
@@ -663,6 +670,12 @@ target = "functions/state_events.lua"
 pattern = "if effects[ii].message then"
 position = "before"
 payload = '''
+if effects[ii].h_chips then
+	mod_percent = true
+	hand_chips = mod_chips(hand_chips+effects[ii].h_chips)
+	update_hand_text({delay = 0}, {chips = chips})
+	card_eval_status_text(G.hand.cards[i], 'h_chips', effects[ii].h_chips, percent)
+end
 if effects[ii].x_chips then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips*effects[ii].x_chips)
