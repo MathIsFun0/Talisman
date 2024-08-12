@@ -91,6 +91,20 @@ function BigMeta.__div(b1, b2)
     return b1:div(b2)
 end
 
+function Big:mod(other)
+    other = Big:create(other)
+    if (other:eq(R.ZERO)) then
+        Big:create(R.ZERO)
+    end
+    if (self.sign*other.sign == -1) then
+        return self:abs():mod(other:abs()):neg()
+    end
+    if (self.sign==-1) then
+        return self:abs():mod(other:abs())
+    end
+    return self:sub(self:div(other):floor():mul(other))
+end
+
 function Big:negate()
     return self:mul(Big:new(-1))
 end

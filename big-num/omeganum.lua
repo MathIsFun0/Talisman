@@ -1269,6 +1269,12 @@ function OmegaMeta.__div(b1, b2)
     end
     return b1:div(b2)
 end
+function OmegaMeta.__mod(b1, b2)
+    if type(b1) == "number" then
+        return Big:create(b1):mod(b2)
+    end
+    return b1:mod(b2)
+end
 
 function OmegaMeta.__unm(b)
     return b:neg()
