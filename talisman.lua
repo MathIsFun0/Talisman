@@ -134,10 +134,45 @@ if Talisman.config_file.break_infinity then
       return lg(x,y)
   end
 
+
+  function SMODS.get_blind_amount(ante)
+    local k = to_big(0.75)
+    local scale = G.GAME.modifiers.scaling
+    local amounts = {
+        to_big(300),
+        to_big(700 + 100*scale),
+        to_big(1400 + 600*scale),
+        to_big(2100 + 2900*scale),
+        to_big(15000 + 5000*scale*math.log(scale)),
+        to_big(12000 + 8000*(scale+1)*(0.4*scale)),
+        to_big(10000 + 25000*(scale+1)*((scale/4)^2)),
+        to_big(50000 * (scale+1)^2 * (scale/7)^2)
+    }
+    
+    if ante < 1 then return to_big(100) end
+    if ante <= 8 then 
+      local amount = amounts[ante]
+      if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
+        local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
+        amount = math.floor(amount / exponent):to_number() * exponent
+      end
+      amount:normalize()
+      return amount
+     end
+    local a, b, c, d = amounts[8], amounts[8]/amounts[7], ante-8, 1 + 0.2*(ante-8)
+    local amount = math.floor(a*(b + (b*k*c)^d)^c)
+    if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
+      local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
+      amount = math.floor(amount / exponent):to_number() * exponent
+    end
+    amount:normalize()
+    return amount
+  end
   -- There's too much to override here so we just fully replace this function
   -- Note that any ante scaling tweaks will need to manually changed...
   local gba = get_blind_amount
   function get_blind_amount(ante)
+    if G.GAME.modifiers.scaling and G.GAME.modifiers.scaling > 3 then return SMODS.get_blind_amount(ante) end
     if type(to_big(1)) == 'number' then return gba(ante) end
       local k = to_big(0.75)
       if not G.GAME.modifiers.scaling or G.GAME.modifiers.scaling == 1 then 
@@ -148,7 +183,7 @@ if Talisman.config_file.break_infinity then
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.MAX_SAFE_INTEGER)) then
+        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
           local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
           amount = math.floor(amount / exponent):to_number() * exponent
         end
@@ -163,7 +198,7 @@ if Talisman.config_file.break_infinity then
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.MAX_SAFE_INTEGER)) then
+        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
           local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
           amount = math.floor(amount / exponent):to_number() * exponent
         end
@@ -178,7 +213,7 @@ if Talisman.config_file.break_infinity then
         if ante <= 8 then return amounts[ante] end
         local a, b, c, d = amounts[8],1.6,ante-8, 1 + 0.2*(ante-8)
         local amount = a*(b+(k*c)^d)^c
-        if (amount:lt(R.MAX_SAFE_INTEGER)) then
+        if (amount:lt(R.E_MAX_SAFE_INTEGER)) then
           local exponent = to_big(10)^(math.floor(amount:log10() - to_big(1))):to_number()
           amount = math.floor(amount / exponent):to_number() * exponent
         end
