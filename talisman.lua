@@ -467,6 +467,71 @@ function Card:set_seal(a,b,immediate)
   return ss(self,a,b,Talisman.config_file.disable_anims and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) or immediate)
 end
 
+function Card:get_chip_x_bonus()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.x_chips <= 1 then return 0 end
+    return self.ability.x_chips
+end
+
+function Card:get_chip_e_bonus()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.e_chips <= 1 then return 0 end
+    return self.ability.e_chips
+end
+
+function Card:get_chip_ee_bonus()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.ee_chips <= 1 then return 0 end
+    return self.ability.ee_chips
+end
+
+function Card:get_chip_eee_bonus()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.eee_chips <= 1 then return 0 end
+    return self.ability.eee_chips
+end
+
+function Card:get_chip_hyper_bonus()
+    if self.debuff then return {0,0} end
+    if self.ability.set == 'Joker' then return {0,0} end
+	if type(self.ability.hyper_chips) ~= 'table' then return {0,0} end
+    if (self.ability.hyper_chips[1] <= 0 or self.ability.hyper_chips[2] <= 0) then return {0,0} end
+    return self.ability.hyper_chips
+end
+
+function Card:get_chip_e_mult()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.e_mult <= 1 then return 0 end
+    return self.ability.e_mult
+end
+
+function Card:get_chip_ee_mult()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.ee_mult <= 1 then return 0 end
+    return self.ability.ee_mult
+end
+
+function Card:get_chip_eee_mult()
+    if self.debuff then return 0 end
+    if self.ability.set == 'Joker' then return 0 end
+    if self.ability.eee_mult <= 1 then return 0 end
+    return self.ability.eee_mult
+end
+
+function Card:get_chip_hyper_mult()
+    if self.debuff then return {0,0} end
+    if self.ability.set == 'Joker' then return {0,0} end
+	if type(self.ability.hyper_mult) ~= 'table' then return {0,0} end
+    if (self.ability.hyper_mult[1] <= 0 or self.ability.hyper_mult[2] <= 0) then return {0,0} end
+    return self.ability.hyper_mult
+end
+
 --Easing fixes
 --Changed this to always work; it's less pretty but fine for held in hand things
 local edo = ease_dollars
