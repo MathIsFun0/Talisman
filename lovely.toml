@@ -587,17 +587,81 @@ match_indent = true
 
 [[patches]]
 [patches.pattern]
+target = "card.lua"
+pattern = "x_mult = center.config.Xmult or 1,"
+position = "after"
+payload = '''
+e_mult = center.config.Emult or 0,
+ee_mult = center.config.EEmult or 0,
+eee_mult = center.config.EEEmult or 0,
+hyper_mult = type(center.config.Hmult) == 'table' and center.config.Hmult or {0, 0},
+x_chips = center.config.Xchips or 0,
+e_chips = center.config.Echips or 0,
+ee_chips = center.config.EEchips or 0,
+eee_chips = center.config.EEEchips or 0,
+hyper_chips = type(center.config.Hchips) == 'table' and center.config.Hchips or {0, 0},
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "local p_dollars = card:get_p_dollars()"
+position = "before"
+payload = '''
+local x_chips = card:get_chip_x_bonus()
+if x_chips > 0 then
+	ret.x_chips = x_chips
+end
+
+local e_chips = card:get_chip_e_bonus()
+if e_chips > 0 then
+	ret.e_chips = e_chips
+end
+
+local ee_chips = card:get_chip_ee_bonus()
+if ee_chips > 0 then
+	ret.ee_chips = ee_chips
+end
+
+local eee_chips = card:get_chip_eee_bonus()
+if eee_chips > 0 then
+	ret.eee_chips = eee_chips
+end
+
+local hyper_chips = card:get_chip_hyper_bonus()
+if type(hyper_chips) == 'table' and hyper_chips[1] > 0 and hyper_chips[2] > 0 then
+	ret.hyper_chips = hyper_chips
+end
+
+local e_mult = card:get_chip_e_mult()
+if e_mult > 0 then
+	ret.e_mult = e_mult
+end
+
+local ee_mult = card:get_chip_ee_mult()
+if ee_mult > 0 then
+	ret.ee_mult = ee_mult
+end
+
+local eee_mult = card:get_chip_eee_mult()
+if eee_mult > 0 then
+	ret.eee_mult = eee_mult
+end
+
+local hyper_mult = card:get_chip_hyper_mult()
+if type(hyper_mult) == 'table' and hyper_mult[1] > 0 and hyper_mult[2] > 0 then
+	ret.hyper_mult = hyper_mult
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
 target = "functions/common_events.lua"
 pattern = "elseif eval_type == 'dollars' then"
 position = "before"
 payload = '''
-elseif eval_type == 'h_chips' then 
-	sound = 'chips1'
-	amt = amt
-	colour = G.C.CHIPS
-	text = localize{type='variable',key='a_chips',vars={amt}}
-    config.type = 'fade'
-	delay = 0.7
 elseif eval_type == 'x_chips' then 
 	sound = 'talisman_xchip'
 	amt = amt
@@ -670,40 +734,34 @@ target = "functions/state_events.lua"
 pattern = "if effects[ii].message then"
 position = "before"
 payload = '''
-if effects[ii].h_chips then
-	mod_percent = true
-	hand_chips = mod_chips(hand_chips+effects[ii].h_chips)
-	update_hand_text({delay = 0}, {chips = chips})
-	card_eval_status_text(G.hand.cards[i], 'h_chips', effects[ii].h_chips, percent)
-end
 if effects[ii].x_chips then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips*effects[ii].x_chips)
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(G.hand.cards[i], 'x_chips', effects[ii].x_chips, percent)
 end
 if effects[ii].e_chips then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips^effects[ii].e_chips)
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(G.hand.cards[i], 'e_chips', effects[ii].e_chips, percent)
 end
 if effects[ii].ee_chips then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips:arrow(2, effects[ii].ee_chips))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(G.hand.cards[i], 'ee_chips', effects[ii].ee_chips, percent)
 end
 if effects[ii].eee_chips then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips:arrow(3, effects[ii].eee_chips))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(G.hand.cards[i], 'eee_chips', effects[ii].eee_chips, percent)
 end
 if effects[ii].hyper_chips and type(effects[ii].hyper_chips) == 'table' then
 	mod_percent = true
 	hand_chips = mod_chips(hand_chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(G.hand.cards[i], 'hyper_chips', effects[ii].hyper_chips, percent)
 end
 if effects[ii].e_mult then
@@ -753,36 +811,36 @@ payload = '''
 if effects[ii].x_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
-	hand_chips = mod_chips(mult*effects[ii].x_chips)
-	update_hand_text({delay = 0}, {chips = chips})
+	hand_chips = mod_chips(hand_chips*effects[ii].x_chips)
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(scoring_hand[i], 'x_chips', effects[ii].x_chips, percent)
 end
 if effects[ii].e_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	hand_chips = mod_chips(hand_chips^effects[ii].e_chips)
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(scoring_hand[i], 'e_chips', effects[ii].e_chips, percent)
 end
 if effects[ii].ee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	hand_chips = mod_chips(hand_chips:arrow(2, effects[ii].ee_chips))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(scoring_hand[i], 'ee_chips', effects[ii].ee_chips, percent)
 end
 if effects[ii].eee_chips then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	hand_chips = mod_chips(hand_chips:arrow(3, effects[ii].eee_chips))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(scoring_hand[i], 'eee_chips', effects[ii].eee_chips, percent)
 end
 if effects[ii].hyper_chips and type(effects[ii].hyper_chips) == 'table' then
 	mod_percent = true
 	if effects[ii].card then juice_card(effects[ii].card) end
 	hand_chips = mod_chips(hand_chips:arrow(effects[ii].hyper_chips[1], effects[ii].hyper_chips[2]))
-	update_hand_text({delay = 0}, {chips = chips})
+	update_hand_text({delay = 0}, {chips = hand_chips})
 	card_eval_status_text(scoring_hand[i], 'hyper_chips', effects[ii].hyper_chips, percent)
 end
 if effects[ii].e_mult then
