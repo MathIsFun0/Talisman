@@ -613,6 +613,14 @@ function Big:add(other)
     local p=x:min(other);
     local q=x:max(other);
     local t = -1;
+    if (p.array[2] == 2) and not p:gt(R.E_MAX_SAFE_INTEGER) then
+        p.array[2] = 1
+        p.array[1] = 10 ^ p.array[1]
+    end
+    if (q.array[2] == 2) and not q:gt(R.E_MAX_SAFE_INTEGER) then
+        q.array[2] = 1
+        q.array[1] = 10 ^ q.array[1]
+    end
     if (q:gt(R.E_MAX_SAFE_INTEGER) or q:div(p):gt(R.MAX_SAFE_INTEGER)) then
         t = q;
     elseif (q.array[2] == nil) or (q.array[2] == 0) then
@@ -659,6 +667,14 @@ function Big:sub(other)
     local q = x:max(other);
     local n = other:gt(x);
     local t = -1;
+    if (p.array[2] == 2) and not p:gt(R.E_MAX_SAFE_INTEGER) then
+        p.array[2] = 1
+        p.array[1] = 10 ^ p.array[1]
+    end
+    if (q.array[2] == 2) and not q:gt(R.E_MAX_SAFE_INTEGER) then
+        q.array[2] = 1
+        q.array[1] = 10 ^ q.array[1]
+    end
     if (q:gt(R.E_MAX_SAFE_INTEGER) or q:div(p):gt(R.MAX_SAFE_INTEGER)) then
         t = q;
         if n then
