@@ -878,8 +878,8 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
-pattern = 'if effects[ii].edition then'
-position = 'after'
+pattern = 'if effects[ii].edition.p_dollars_mod then'
+position = 'before'
 match_indent = true
 payload = '''
 if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
@@ -960,6 +960,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 end
 '''
 
+# my fix for this one is really scuffed
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
@@ -967,6 +968,15 @@ pattern = 'if edition_effects.jokers.x_mult_mod then'
 position = 'before'
 match_indent = true
 payload = '''
+if edition_effects.jokers.x_mult_mod then
+	mult = mod_mult(mult*edition_effects.jokers.x_mult_mod)
+	update_hand_text({delay = 0}, {mult = mult})
+	card_eval_status_text(_card, 'jokers', nil, percent, nil, {
+		message = localize{type='variable',key='a_xmult',vars={edition_effects.jokers.x_mult_mod}},
+		x_mult_mod =  edition_effects.jokers.x_mult_mod,
+		colour =  G.C.EDITION,
+		edition = true})
+end
 if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 	local trg = G.jokers.cards[i]
 	local edi = trg.edition
@@ -1043,6 +1053,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hyper_mult = true})
 	end
 end
+edition_effects.jokers.x_mult_mod = nil
 '''
 
 # replace save manager with version that works with Talisman saves
