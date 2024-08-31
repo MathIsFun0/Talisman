@@ -2,12 +2,12 @@ local lovely = require("lovely")
 local nativefs = require("nativefs")
 
 
-Talisman = {config_file = {disable_anims = true, break_infinity = "bignumber", score_opt_id = 2}}
+Talisman = {config_file = {disable_anims = true, break_infinity = "omeganum", score_opt_id = 2}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
     Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
 
     if Talisman.config_file.break_infinity and type(Talisman.config_file.break_infinity) ~= 'string' then
-      Talisman.config_file.break_infinity = "bignumber"
+      Talisman.config_file.break_infinity = "omeganum"
     end
 end
 
