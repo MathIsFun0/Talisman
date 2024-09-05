@@ -37,14 +37,7 @@ if not SpectralPack then
   end
 end
 SpectralPack[#SpectralPack+1] = UIBox_button{ label = {"Talisman"}, button = "talismanMenu", colour = G.C.MONEY, minw = 5, minh = 0.7, scale = 0.6}
-G.FUNCS.talismanMenu = function(e)
-  local tabs = create_tabs({
-      snap_to_nav = true,
-      tabs = {
-          {
-              label = "Talisman",
-              chosen = true,
-              tab_definition_function = function()
+Talisman.config_tab = function()
                 tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
                   {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
                 }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims",
@@ -73,6 +66,14 @@ G.FUNCS.talismanMenu = function(e)
                 nodes = tal_nodes
             }
               end
+G.FUNCS.talismanMenu = function(e)
+  local tabs = create_tabs({
+      snap_to_nav = true,
+      tabs = {
+          {
+              label = "Talisman",
+              chosen = true,
+              tab_definition_function = Talisman.config_tab
           },
       }})
   G.FUNCS.overlay_menu{
