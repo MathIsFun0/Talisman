@@ -49,6 +49,8 @@ if SMODS.Sound then
 	})
 end
 
+function SMODS.current_mod.load_mod_config() end
+function SMODS.current_mod.save_mod_config() end
 SMODS.current_mod.config_tab = Talisman.config_tab
 --[[SMODS.Joker{
   key = "test",
