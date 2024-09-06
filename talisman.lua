@@ -11,32 +11,6 @@ if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
     end
 end
 
-if not SpectralPack then
-  SpectralPack = {}
-  local ct = create_tabs
-  function create_tabs(args)
-      if args and args.tab_h == 7.05 then
-          args.tabs[#args.tabs+1] = {
-              label = "Spectral Pack",
-              tab_definition_function = function() return {
-                  n = G.UIT.ROOT,
-                  config = {
-                      emboss = 0.05,
-                      minh = 6,
-                      r = 0.1,
-                      minw = 10,
-                      align = "cm",
-                      padding = 0.2,
-                      colour = G.C.BLACK
-                  },
-                  nodes = SpectralPack
-              } end
-          }
-      end
-      return ct(args)
-  end
-end
-SpectralPack[#SpectralPack+1] = UIBox_button{ label = {"Talisman"}, button = "talismanMenu", colour = G.C.MONEY, minw = 5, minh = 0.7, scale = 0.6}
 Talisman.config_tab = function()
                 tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
                   {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
