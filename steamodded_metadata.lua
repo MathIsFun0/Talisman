@@ -49,9 +49,12 @@ if SMODS.Sound then
 	})
 end
 
-function SMODS.current_mod.load_mod_config() end
-function SMODS.current_mod.save_mod_config() end
-SMODS.current_mod.config_tab = Talisman.config_tab
+
+if SMODS.current_mod then
+  function SMODS.current_mod.load_mod_config() end
+  function SMODS.current_mod.save_mod_config() end
+  SMODS.current_mod.config_tab = Talisman.config_tab
+end
 --[[SMODS.Joker{
   key = "test",
   name = "Joker Test",
