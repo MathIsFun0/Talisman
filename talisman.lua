@@ -10,6 +10,22 @@ if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
       Talisman.config_file.break_infinity = "omeganum"
     end
 end
+if not SMODS or not SMODS.Atlas then
+  local createOptionsRef = create_UIBox_options
+  function create_UIBox_options()
+  contents = createOptionsRef()
+  local m = UIBox_button({
+  minw = 5,
+  button = "talismanMenu",
+  label = {
+  "Talisman"
+  },
+  colour = G.C.GOLD
+  })
+  table.insert(contents.nodes[1].nodes[1].nodes[1].nodes, #contents.nodes[1].nodes[1].nodes[1].nodes + 1, m)
+  return contents
+  end
+end
 
 Talisman.config_tab = function()
                 tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
