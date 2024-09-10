@@ -330,6 +330,13 @@ function to_big(x, y)
     return x[1]*(y or 1);
   end
 end
+function to_number(x)
+  if type(x) == 'table' and (getmetatable(x) == BigMeta or getmetatable(x) == OmegaMeta) then
+    return x:to_number()
+  else
+    return x
+  end
+end
 
 --patch to remove animations
 local cest = card_eval_status_text
