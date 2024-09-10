@@ -21,7 +21,7 @@ function BalaNotation:format(n, places)
             return "("..exponent.."e"..mantissa..")"
         end
         if n < 1 then return 1 end
-        return n
+        return n or "ERROR"
     end
     --The notation here is heavily based on Hyper-E notation.
     if to_big(n:log10()) < to_big(1000000) then
