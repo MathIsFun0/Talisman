@@ -1,6 +1,10 @@
 local lovely = require("lovely")
 local nativefs = require("nativefs")
 
+if not nativefs.getInfo(lovely.mod_dir .. "/Talisman") then
+    error(
+        'Could not find proper Talisman folder.\nPlease make sure the folder for Talisman is named exactly "Talisman" and not "Talisman-main" or anything else.')
+end
 
 Talisman = {config_file = {disable_anims = true, break_infinity = "omeganum", score_opt_id = 2}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
