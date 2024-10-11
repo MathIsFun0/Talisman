@@ -324,6 +324,9 @@ function to_big(x, y)
     return result
   elseif is_number(x) then
     return x * 10^(y or 0)
+
+  elseif type(x) == "nil" then
+    return 0
   else
     if ((#x>=2) and ((x[2]>=2) or (x[2]==1) and (x[1]>308))) then
       return 1e309
@@ -473,28 +476,28 @@ end
 function Card:get_chip_x_bonus()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.x_chips <= 1 then return 0 end
+    if (self.ability.x_chips or 0) <= 1 then return 0 end
     return self.ability.x_chips
 end
 
 function Card:get_chip_e_bonus()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.e_chips <= 1 then return 0 end
+    if (self.ability.e_chips or 0) <= 1 then return 0 end
     return self.ability.e_chips
 end
 
 function Card:get_chip_ee_bonus()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.ee_chips <= 1 then return 0 end
+    if (self.ability.ee_chips or 0) <= 1 then return 0 end
     return self.ability.ee_chips
 end
 
 function Card:get_chip_eee_bonus()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.eee_chips <= 1 then return 0 end
+    if (self.ability.eee_chips or 0) <= 1 then return 0 end
     return self.ability.eee_chips
 end
 
@@ -509,21 +512,21 @@ end
 function Card:get_chip_e_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.e_mult <= 1 then return 0 end
+    if (self.ability.e_mult or 0) <= 1 then return 0 end
     return self.ability.e_mult
 end
 
 function Card:get_chip_ee_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.ee_mult <= 1 then return 0 end
+    if (self.ability.ee_mult or 0) <= 1 then return 0 end
     return self.ability.ee_mult
 end
 
 function Card:get_chip_eee_mult()
     if self.debuff then return 0 end
     if self.ability.set == 'Joker' then return 0 end
-    if self.ability.eee_mult <= 1 then return 0 end
+    if (self.ability.eee_mult or 0) <= 1 then return 0 end
     return self.ability.eee_mult
 end
 
