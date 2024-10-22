@@ -14,7 +14,7 @@ if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
       Talisman.config_file.break_infinity = "omeganum"
     end
 end
-if not SMODS then
+if not SMODS or not JSON then
   local createOptionsRef = create_UIBox_options
   function create_UIBox_options()
   contents = createOptionsRef()
