@@ -551,24 +551,26 @@ function ease_dollars(mod, instant)
 end
 
 local su = G.start_up
-function G:start_up()
-  su(self)
-  function STR_UNPACK(str)
-    local chunk, err = loadstring(str)
-    if chunk then
-      setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big})  -- Use an empty environment to prevent access to potentially harmful functions
-      local success, result = pcall(chunk)
-      if success then
-      return result
-      else
-      print("Error unpacking string: " .. result)
-      return nil
-      end
+function safe_str_unpack(str)
+  local chunk, err = loadstring(str)
+  if chunk then
+    setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big, inf = 1.79769e308})  -- Use an empty environment to prevent access to potentially harmful functions
+    local success, result = pcall(chunk)
+    if success then
+    return result
     else
-      print("Error loading string: " .. err)
-      return nil
+    print("Error unpacking string: " .. result)
+    return nil
     end
-    end
+  else
+    print("Error loading string: " .. err)
+    return nil
+  end
+  end
+function G:start_up()
+  STR_UNPACK = safe_str_unpack
+  su(self)
+  STR_UNPACK = safe_str_unpack
 end
 
 --Skip round animation things
