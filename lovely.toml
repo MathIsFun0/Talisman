@@ -1202,9 +1202,9 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
-pattern = '''                        if G.SCORING_COROUTINE then return false end 
-                        G.STATE_COMPLETE = false
+pattern = '''                       G.STATE_COMPLETE = false
+                        return true
 '''
 position = 'before'
 payload = 'if G.SCORING_COROUTINE then return false end '
-match_indent = true
+match_indent = false
