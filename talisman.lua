@@ -483,7 +483,7 @@ Talisman.dollar_update = false
 local ccj = Card.calculate_joker
 function Card:calculate_joker(context)
   --scoring coroutine
-  if ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
+  if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
         coroutine.yield()
   end
   Talisman.calculating_joker = true
