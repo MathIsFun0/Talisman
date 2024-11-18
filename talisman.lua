@@ -440,7 +440,6 @@ function love.update(...)
     if G.SCORING_COROUTINE then
         if coroutine.status(G.SCORING_COROUTINE) == "dead" then
             G.SCORING_COROUTINE = nil
-            print("dead")
             G.FUNCS.exit_overlay_menu()
         else
             G.SCORING_TEXT = nil
