@@ -430,22 +430,34 @@ local oldplay = G.FUNCS.evaluate_play
 function G.FUNCS.evaluate_play()
     G.SCORING_COROUTINE = coroutine.create(oldplay)
     G.LAST_SCORING_YIELD = love.timer.getTime()
-    G.LAST_DOT_UPDATE = love.timer.getTime()
-    coroutine.resume(G.SCORING_COROUTINE)
+    G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
+    local success, err = coroutine.resume(G.SCORING_COROUTINE)
+    if not success then
+      error(err)
+    end
 end
 
+
 local oldupd = love.update
-function love.update(...)
-    oldupd(...)
+function love.update(dt, ...)
+    oldupd(dt, ...)
     if G.SCORING_COROUTINE then
+      if collectgarbage("count") > 1024*1024 then
+        collectgarbage("collect")
+      end
         if coroutine.status(G.SCORING_COROUTINE) == "dead" then
             G.SCORING_COROUTINE = nil
             G.FUNCS.exit_overlay_menu()
+            local totalCalcs = 0
+            for i, v in pairs(G.CARD_CALC_COUNTS) do
+              totalCalcs = totalCalcs + v[1]
+            end
+            G.GAME.LAST_CALCS = totalCalcs
         else
             G.SCORING_TEXT = nil
             if not G.OVERLAY_MENU then
-                G.scoring_text = "Calculating"
-                G.SCORING_TEXT = DynaText({string = {{ref_table = G, ref_value = 'scoring_text'}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 1.5, silent = true})
+                G.scoring_text = "Calculating..."
+                G.SCORING_TEXT = DynaText({string = {{ref_table = G, ref_value = 'scoring_text'}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})
                 G.FUNCS.overlay_menu({
                     definition = 
                     {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes={
@@ -454,10 +466,20 @@ function love.update(...)
                     config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
                 })
             else
-                if G.OVERLAY_MENU and G.scoring_text and ((G.LAST_DOT_UPDATE + 1) < love.timer.getTime()) then
-                    G.LAST_DOT_UPDATE = love.timer.getTime()
-                    G.scoring_text = G.scoring_text.."."
+
+                if G.OVERLAY_MENU and G.scoring_text then
+                  local totalCalcs = 0
+                  for i, v in pairs(G.CARD_CALC_COUNTS) do
+                    totalCalcs = totalCalcs + v[1]
+                  end
+                  local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
+                  
+                  G.scoring_text = 
+                  "Calculating... Elapsed calculations: "..tostring(totalCalcs)..
+                  ", Jokers yet to score: "..tostring(jokersYetToScore)..
+                  ", Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
                 end
+
             end
 			--this coroutine allows us to stagger GC cycles through
 			--the main source of waste in terms of memory (especially w joker retriggers) is through local variables that become garbage
@@ -465,12 +487,18 @@ function love.update(...)
 			--event queue overhead seems to not exist if Talismans Disable Scoring Animations is off.
 			--event manager has to wait for scoring to finish until it can keep processing events anyways.
 
-            collectgarbage("collect")
-	    G.LAST_SCORING_YIELD = love.timer.getTime()
-            coroutine.resume(G.SCORING_COROUTINE)
+            
+	          G.LAST_SCORING_YIELD = love.timer.getTime()
+            
+            local success, msg = coroutine.resume(G.SCORING_COROUTINE)
+            if not success then
+              error(msg)
+            end
         end
     end
 end
+
+
 
 TIME_BETWEEN_SCORING_FRAMES = 0.1 -- 10 fps during scoring
 								  -- we dont want overhead from updates making scoring much slower
@@ -482,11 +510,25 @@ Talisman.dollar_update = false
 local ccj = Card.calculate_joker
 function Card:calculate_joker(context)
   --scoring coroutine
+  G.CURRENT_SCORING_CARD = self
+  G.CARD_CALC_COUNTS = G.CARD_CALC_COUNTS or {}
+  if G.CARD_CALC_COUNTS[self] then
+    G.CARD_CALC_COUNTS[self][1] = G.CARD_CALC_COUNTS[self][1] + 1
+  else
+    G.CARD_CALC_COUNTS[self] = {1, 1}
+  end
+
+
   if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
         coroutine.yield()
   end
   Talisman.calculating_joker = true
   local ret = ccj(self, context)
+
+  if ret and type(ret) == "table" and ret.repetitions then
+    G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
+    G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
+  end
   Talisman.calculating_joker = false
   return ret
 end
