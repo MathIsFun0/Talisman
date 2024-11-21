@@ -1,10 +1,10 @@
 --- STEAMODDED HEADER
 --- MOD_NAME: Talisman
 --- MOD_ID: Talisman
---- MOD_AUTHOR: [MathIsFun_, Mathguy24, jenwalter666]
---- MOD_DESCRIPTION: A mod that increases Balatro's score limit.
+--- MOD_AUTHOR: [MathIsFun_, Mathguy24, jenwalter666, cg-223]
+--- MOD_DESCRIPTION: A mod that increases Balatro's score limit and skips scoring animations.
 --- PREFIX: talisman
---- VERSION: 2.0.0-beta9
+--- VERSION: 2.0.0-beta9.5
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
