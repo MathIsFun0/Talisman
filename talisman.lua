@@ -476,7 +476,7 @@ function love.update(dt, ...)
                   
                   G.scoring_text = 
                   "Calculating... Elapsed calculations: "..tostring(totalCalcs)..
-                  ", Jokers yet to score: "..tostring(jokersYetToScore)..
+                  ", Cards yet to score: "..tostring(jokersYetToScore)..
                   ", Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
                 end
 
