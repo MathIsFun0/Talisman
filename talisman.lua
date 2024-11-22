@@ -456,13 +456,21 @@ function love.update(dt, ...)
         else
             G.SCORING_TEXT = nil
             if not G.OVERLAY_MENU then
-                G.scoring_text = "Calculating..."
-                G.SCORING_TEXT = DynaText({string = {{ref_table = G, ref_value = 'scoring_text'}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})
+                G.scoring_text = {"Calculating...", "", "", ""}
+                G.SCORING_TEXT = { 
+                  {n = G.UIT.C, nodes = {
+                    {n = G.UIT.R, config = {padding = 0.1, align = "cm"}, nodes = {
+                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 1}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 1, silent = true})}},
+                    }},{n = G.UIT.R,  nodes = {
+                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 2}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                    }},{n = G.UIT.R,  nodes = {
+                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                    }},{n = G.UIT.R,  nodes = {
+                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                }}}}}
                 G.FUNCS.overlay_menu({
                     definition = 
-                    {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes={
-                        {n=G.UIT.O, config={object = G.SCORING_TEXT}}
-                    }}, 
+                    {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
                     config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
                 })
             else
@@ -473,11 +481,10 @@ function love.update(dt, ...)
                     totalCalcs = totalCalcs + v[1]
                   end
                   local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
-                  
-                  G.scoring_text = 
-                  "Calculating... Elapsed calculations: "..tostring(totalCalcs)..
-                  ", Cards yet to score: "..tostring(jokersYetToScore)..
-                  ", Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
+                  G.scoring_text[1] = "Calculating..."
+                  G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs)
+                  G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
+                  G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
                 end
 
             end
@@ -500,8 +507,9 @@ end
 
 
 
-TIME_BETWEEN_SCORING_FRAMES = 0.1 -- 10 fps during scoring
-								  -- we dont want overhead from updates making scoring much slower
+TIME_BETWEEN_SCORING_FRAMES = 0.03 -- 30 fps during scoring
+-- we dont want overhead from updates making scoring much slower
+-- originally 10 fps, I think 30 fps is a good way to balance it while making it look smooth, too
 --wrap everything in calculating contexts so we can do more things with it
 Talisman.calculating_joker = false
 Talisman.calculating_score = false
