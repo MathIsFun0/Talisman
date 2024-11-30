@@ -1208,3 +1208,20 @@ pattern = '''                       G.STATE_COMPLETE = false
 position = 'before'
 payload = 'if G.SCORING_COROUTINE then return false end '
 match_indent = false
+
+# Don't crash in vanilla with big numbers in UI
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+pattern = "assembled_string = assembled_string..(type(subpart) == 'string' and subpart or args.vars[tonumber(subpart[1])] or 'ERROR')"
+position = 'before'
+payload = '''
+if not SMODS and type(subpart) ~= 'string' then 
+	if type(args.vars[tonumber(subpart[ 1 ])]) ~= 'number' then
+		args.vars[tonumber(subpart[ 1 ])] = tostring(args.vars[tonumber(subpart[ 1 ])])
+	else
+		args.vars[tonumber(subpart[ 1 ])] = number_format(args.vars[tonumber(subpart[ 1 ])], 1000000)
+	end
+end
+'''
+match_indent = false

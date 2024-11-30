@@ -312,7 +312,7 @@ function Big:to_number()
 end
 
 function BigMeta.__tostring(b)
-    return b:to_string()
+    return number_format(b)
 end
 
 function Big.parse(str)

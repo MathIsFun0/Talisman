@@ -1329,7 +1329,7 @@ function OmegaMeta.__eq(b1, b2)
 end
 
 function OmegaMeta.__tostring(b)
-    return b:toString()
+    return number_format(b)
 end
 
 

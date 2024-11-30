@@ -93,6 +93,10 @@ if Talisman.config_file.break_infinity then
       for _, v in pairs(obj.hands) do
           v.chips = to_big(v.chips)
           v.mult = to_big(v.mult)
+          v.s_chips = to_big(v.s_chips)
+          v.s_mult = to_big(v.s_mult)
+          v.l_chips = to_big(v.l_chips)
+          v.l_mult = to_big(v.l_mult)
       end
       return obj
   end
