@@ -498,6 +498,16 @@ payload = "if G.GAME.blind and (not SMODS or G.GAME.blind.in_blind) and not (Tal
 match_indent = true
 overwrite = false
 
+# hand level ups
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if not instant then"
+position = "at"
+payload = "if not instant and not Talisman.config_file.disable_anims then"
+match_indent = true
+overwrite = false
+
 # Juice Issues
 [[patches]]
 [patches.pattern]
