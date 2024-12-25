@@ -12,7 +12,7 @@ Notations = {
     StandardNotation = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations/standardnotation.lua")(),
     ThousandNotation = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations/thousandnotation.lua")(),
     DynamicNotation = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations/dynamicnotation.lua")(),
-    Balatro = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations/balatro.lua")(),
+    Balatro = nativefs.load(lovely.mod_dir.."/Talisman/big-num/notations/Balatro.lua")(),
 }
 
 return Notations
