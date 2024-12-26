@@ -97,7 +97,9 @@ if Talisman.config_file.break_infinity then
           v.s_mult = to_big(v.s_mult)
           v.l_chips = to_big(v.l_chips)
           v.l_mult = to_big(v.l_mult)
+          v.level = to_big(v.level)
       end
+      obj.starting_params.dollars = to_big(obj.starting_params.dollars)
       return obj
   end
 
@@ -118,6 +120,11 @@ if Talisman.config_file.break_infinity then
   function math.floor(x)
       if type(x) == 'table' then return x:floor() end
       return mf(x)
+  end
+  local mc = math.ceil
+  function math.ceil(x)
+      if type(x) == 'table' then return x:ceil() end
+      return mc(x)
   end
 
   local l10 = math.log10
@@ -651,7 +658,7 @@ local edo = ease_dollars
 function ease_dollars(mod, instant)
   if Talisman.config_file.disable_anims then--and (Talisman.calculating_joker or Talisman.calculating_score or Talisman.calculating_card) then
     mod = mod or 0
-    if mod < 0 then inc_career_stat('c_dollars_earned', mod) end
+    if to_big(mod) < to_big(0) then inc_career_stat('c_dollars_earned', mod) end
     G.GAME.dollars = G.GAME.dollars + mod
     Talisman.dollar_update = true
   else return edo(mod, instant) end

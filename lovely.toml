@@ -438,6 +438,100 @@ if Big and G.STATE == G.STATES.MENU then self.config.scale = to_big(self.config.
 '''
 match_indent = true
 
+# poker hand level fixes
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = "{n=G.UIT.T, config={text = localize('k_level_prefix')..G.GAME.hands[handname].level, scale = 0.5, colour = G.C.UI.TEXT_DARK}}"
+position = "at"
+payload = "{n=G.UIT.T, config={text = localize('k_level_prefix')..number_format(G.GAME.hands[handname].level), scale = 0.5, colour = G.C.UI.TEXT_DARK}}"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if args.level >= 10 then"
+position = "at"
+payload = "if to_big(args.level) >= to_big(10) then"
+match_indent = true
+
+# money fixes
+[[patches]]
+[patches.regex]
+target = "functions/state_events.lua"
+pattern = '''G\.GAME\.dollars >= 5'''
+position = "at"
+payload = "to_big(G.GAME.dollars) >= to_big(5)"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if G.GAME.dollars >= 400 then"
+position = "at"
+payload = '''if to_big(G.GAME.dollars) >= to_big(400) then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = "if ((G.GAME.dollars-G.GAME.bankrupt_at) - G.GAME.current_round.reroll_cost < 0) and G.GAME.current_round.reroll_cost ~= 0 then"
+position = "at"
+payload = '''if ((to_big(G.GAME.dollars)-to_big(G.GAME.bankrupt_at)) - to_big(G.GAME.current_round.reroll_cost) < to_big(0)) and G.GAME.current_round.reroll_cost ~= 0 then'''
+match_indent = true
+
+[[patches]]
+[patches.regex]
+target = "functions/button_callbacks.lua"
+pattern = '''e\.config\.ref_table\.cost > G\.GAME\.dollars - G\.GAME\.bankrupt_at'''
+position = "at"
+payload = '''to_big(e.config.ref_table.cost) > to_big(G.GAME.dollars) - to_big(G.GAME.bankrupt_at)'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''if ((G.GAME.dollars-G.GAME.bankrupt_at) - 10 >= 0) and'''
+position = "at"
+payload = '''
+if ((to_big(G.GAME.dollars)-to_big(G.GAME.bankrupt_at)) - to_big(10) >= to_big(0)) and
+'''
+match_indent = true
+
+# for now, I'm letting dollar eval ignore bignum, I'll patch it later
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if num_dollars > 60 then"
+position = "at"
+payload = '''num_dollars = to_number(num_dollars); if math.abs(to_number(num_dollars)) > 60 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if num_dollars > 60 or num_dollars < -60 then"
+position = "at"
+payload = '''num_dollars = to_number(num_dollars); if math.abs(to_number(num_dollars)) > 60 then'''
+match_indent = true
+
+# This one also patches some extra stuff, but shouldn't cause any trouble
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if mod < 0 then"
+position = "at"
+payload = "if to_big(mod) < to_big(0) then"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = "if G.GAME.hands[handname].level > 1 then"
+position = "at"
+payload = "if to_big(G.GAME.hands[handname].level) > to_big(1) then"
+match_indent = true
+
 # call init game object appendum after init game object
 [[patches]]
 [patches.pattern]
