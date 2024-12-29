@@ -666,11 +666,13 @@ function safe_str_unpack(str)
     if success then
     return result
     else
-    print("Error unpacking string: " .. result)
+    print("[Talisman] Error unpacking string: " .. result)
+    print(tostring(str))
     return nil
     end
   else
-    print("Error loading string: " .. err)
+    print("[Talisman] Error loading string: " .. err)
+    print(tostring(str))
     return nil
   end
   end
@@ -697,6 +699,13 @@ function G.FUNCS.evaluate_round()
     else
         return gfer()
     end
+end
+
+local g_start_run = Game.start_run
+function Game:start_run(args)
+  local ret = g_start_run(self, args)
+  self.GAME.round_resets.ante_disp = self.GAME.round_resets.ante_disp or number_format(self.GAME.round_resets.ante)
+  return ret
 end
 
 --some debugging functions
