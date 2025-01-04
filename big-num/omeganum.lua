@@ -718,7 +718,7 @@ function Big:div(other)
         return Big:create(R.NaN)
     end
     if (other:eq(R.ZERO)) then
-        Big:create(R.POSITIVE_INFINITY)
+        return Big:create(R.POSITIVE_INFINITY)
     end
     if (other:eq(R.ONE)) then
         return x:clone()
