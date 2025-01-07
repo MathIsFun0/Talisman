@@ -61,28 +61,36 @@ end
 --[[SMODS.Joker{
   key = "test",
   name = "Joker Test",
-  rarity = "cry_exotic",
+  rarity = 4,
   discovered = true,
   pos = {x = 9, y = 2},
   cost = 4,
   loc_txt = {
-      name = "Infinitus",
+      name = "Stat Stick",
       text = {
-        "{C:mult,E:1}+10#2#1000#3#10{} Mult"
+        "2 of {C:dark_edition,E:2,s:0.8}every scoring effect"
       }
   },
   loc_vars = function(self, info_queue, center)
     return {vars = {"#","{","}"}}
   end,
   calculate = function(self, card, context)
-    if context.cardarea == G.jokers and not context.before and not context.after then
-          local mult = Big:create(10):arrow(1000,10)
-          return {
-              mult_mod = mult,
-              colour = G.C.RED,
-              message = "!"
-          }
-      end
+    if context.joker_main then
+        return {
+          mult_mod = 2,
+          Xmult_mod = 2,
+          Emult_mod = 2,
+          EEmult_mod = 2,
+          EEEmult_mod = 2,
+          hypermult_mod = {22, 2},
+          chip_mod = 2,
+          Xchip_mod = 2,
+          Echip_mod = 2,
+          EEchip_mod = 2,
+          EEEchip_mod = 2,
+          hyperchip_mod = {22, 2}
+        }
+    end
   end,
 }--]]
 

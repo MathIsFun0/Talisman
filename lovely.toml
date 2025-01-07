@@ -899,7 +899,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		hand_chips = mod_chips(hand_chips * edi.x_chips)
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = 'X'.. edi.x_chips ..' Chips',
+		{message = 'X'.. edi.x_chips ,
 		edition = true,
 		x_chips = true})
 	end
@@ -907,7 +907,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		hand_chips = mod_chips(hand_chips ^ edi.e_chips)
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^'.. edi.e_chips ..' Chips',
+		{message = '^'.. edi.e_chips ,
 		edition = true,
 		e_chips = true})
 	end
@@ -915,7 +915,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(2, edi.ee_chips))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^'.. edi.ee_chips ..' Chips',
+		{message = '^^'.. edi.ee_chips ,
 		edition = true,
 		ee_chips = true})
 	end
@@ -923,7 +923,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(3, edi.eee_chips))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^^'.. edi.eee_chips ..' Chips',
+		{message = '^^^'.. edi.eee_chips ,
 		edition = true,
 		eee_chips = true})
 	end
@@ -931,7 +931,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(edi.hyper_chips[1], edi.hyper_chips[2]))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = (edi.hyper_chips[1] > 5 and ('{' .. edi.hyper_chips[1] .. '}') or string.rep('^', edi.hyper_chips[1])) .. edi.hyper_chips[2] ..' Chips',
+		{message = (edi.hyper_chips[1] > 5 and ('{' .. edi.hyper_chips[1] .. '}') or string.rep('^', edi.hyper_chips[1])) .. edi.hyper_chips[2] ,
 		edition = true,
 		eee_chips = true})
 	end
@@ -994,7 +994,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hand_chips = mod_chips(hand_chips * edi.x_chips)
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = 'X'.. edi.x_chips ..' Chips',
+		{message = 'X'.. edi.x_chips ,
 		edition = true,
 		x_chips = true})
 	end
@@ -1002,7 +1002,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hand_chips = mod_chips(hand_chips ^ edi.e_chips)
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^'.. edi.e_chips ..' Chips',
+		{message = '^'.. edi.e_chips ,
 		edition = true,
 		e_chips = true})
 	end
@@ -1010,7 +1010,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(2, edi.ee_chips))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^'.. edi.ee_chips ..' Chips',
+		{message = '^^'.. edi.ee_chips ,
 		edition = true,
 		ee_chips = true})
 	end
@@ -1018,7 +1018,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(3, edi.eee_chips))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^^'.. edi.eee_chips ..' Chips',
+		{message = '^^^'.. edi.eee_chips ,
 		edition = true,
 		eee_chips = true})
 	end
@@ -1026,7 +1026,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		hand_chips = mod_chips(hand_chips:arrow(edi.hyper_chips[1], edi.hyper_chips[2]))
 		update_hand_text({delay = 0}, {chips = hand_chips})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = (edi.hyper_chips[1] > 5 and ('{' .. edi.hyper_chips[1] .. '}') or string.rep('^', edi.hyper_chips[1])) .. edi.hyper_chips[2] ..' Chips',
+		{message = (edi.hyper_chips[1] > 5 and ('{' .. edi.hyper_chips[1] .. '}') or string.rep('^', edi.hyper_chips[1])) .. edi.hyper_chips[2] ,
 		edition = true,
 		eee_chips = true})
 	end
