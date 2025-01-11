@@ -711,13 +711,13 @@ end
 -- Steamodded calculation API: add extra operations
 if SMODS and SMODS.calculate_individual_effect then
   local scie = SMODS.calculate_individual_effect
-  function SMODS.calculate_individual_effect(effect, scored_card, percent, key, amount, from_edition)
+  function SMODS.calculate_individual_effect(effect, scored_card, key, amount, from_edition)
     -- For some reason, some keys' animations are completely removed
     -- I think this is caused by a lovely patch conflict
     --if key == 'chip_mod' then key = 'chips' end
     --if key == 'mult_mod' then key = 'mult' end
     --if key == 'Xmult_mod' then key = 'x_mult' end
-    local ret = scie(effect, scored_card, percent, key, amount, from_edition)
+    local ret = scie(effect, scored_card, key, amount, from_edition)
     if ret then
       return ret
     end
