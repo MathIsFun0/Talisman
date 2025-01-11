@@ -428,135 +428,138 @@ function Game:update(dt)
       Talisman.dollar_update = false
     end
 end
---scoring coroutine
-local oldplay = G.FUNCS.evaluate_play
-
-function G.FUNCS.evaluate_play()
-    G.SCORING_COROUTINE = coroutine.create(oldplay)
-    G.LAST_SCORING_YIELD = love.timer.getTime()
-    G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-    local success, err = coroutine.resume(G.SCORING_COROUTINE)
-    if not success then
-      error(err)
-    end
-end
-
-
-local oldupd = love.update
-function love.update(dt, ...)
-    oldupd(dt, ...)
-    if G.SCORING_COROUTINE then
-      if collectgarbage("count") > 1024*1024 then
-        collectgarbage("collect")
-      end
-        if coroutine.status(G.SCORING_COROUTINE) == "dead" then
-            G.SCORING_COROUTINE = nil
-            G.FUNCS.exit_overlay_menu()
-            local totalCalcs = 0
-            for i, v in pairs(G.CARD_CALC_COUNTS) do
-              totalCalcs = totalCalcs + v[1]
-            end
-            G.GAME.LAST_CALCS = totalCalcs
-        else
-            G.SCORING_TEXT = nil
-            if not G.OVERLAY_MENU then
-                G.scoring_text = {"Calculating...", "", "", ""}
-                G.SCORING_TEXT = { 
-                  {n = G.UIT.C, nodes = {
-                    {n = G.UIT.R, config = {padding = 0.1, align = "cm"}, nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 1}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 1, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 2}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                    }},{n = G.UIT.R,  nodes = {
-                    {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                }}}}}
-                G.FUNCS.overlay_menu({
-                    definition = 
-                    {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
-                    config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
-                })
-            else
-
-                if G.OVERLAY_MENU and G.scoring_text then
-                  local totalCalcs = 0
-                  for i, v in pairs(G.CARD_CALC_COUNTS) do
-                    totalCalcs = totalCalcs + v[1]
-                  end
-                  local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
-                  G.scoring_text[1] = "Calculating..."
-                  G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs)
-                  G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
-                  G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
-                end
-
-            end
-			--this coroutine allows us to stagger GC cycles through
-			--the main source of waste in terms of memory (especially w joker retriggers) is through local variables that become garbage
-			--this practically eliminates the memory overhead of scoring
-			--event queue overhead seems to not exist if Talismans Disable Scoring Animations is off.
-			--event manager has to wait for scoring to finish until it can keep processing events anyways.
-
-            
-	          G.LAST_SCORING_YIELD = love.timer.getTime()
-            
-            local success, msg = coroutine.resume(G.SCORING_COROUTINE)
-            if not success then
-              error(msg)
-            end
-        end
-    end
-end
-
-
-
-TIME_BETWEEN_SCORING_FRAMES = 0.03 -- 30 fps during scoring
--- we dont want overhead from updates making scoring much slower
--- originally 10 fps, I think 30 fps is a good way to balance it while making it look smooth, too
---wrap everything in calculating contexts so we can do more things with it
-Talisman.calculating_joker = false
-Talisman.calculating_score = false
-Talisman.calculating_card = false
-Talisman.dollar_update = false
-local ccj = Card.calculate_joker
-function Card:calculate_joker(context)
+Talisman.F_NO_COROUTINE = false --easy disabling for bugfixing, since the coroutine can make it hard to see where errors are
+if not Talisman.F_NO_COROUTINE then
   --scoring coroutine
-  G.CURRENT_SCORING_CARD = self
-  G.CARD_CALC_COUNTS = G.CARD_CALC_COUNTS or {}
-  if G.CARD_CALC_COUNTS[self] then
-    G.CARD_CALC_COUNTS[self][1] = G.CARD_CALC_COUNTS[self][1] + 1
-  else
-    G.CARD_CALC_COUNTS[self] = {1, 1}
+  local oldplay = G.FUNCS.evaluate_play
+
+  function G.FUNCS.evaluate_play()
+      G.SCORING_COROUTINE = coroutine.create(oldplay)
+      G.LAST_SCORING_YIELD = love.timer.getTime()
+      G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
+      local success, err = coroutine.resume(G.SCORING_COROUTINE)
+      if not success then
+        error(err)
+      end
   end
 
 
-  if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
-        coroutine.yield()
-  end
-  Talisman.calculating_joker = true
-  local ret = ccj(self, context)
+  local oldupd = love.update
+  function love.update(dt, ...)
+      oldupd(dt, ...)
+      if G.SCORING_COROUTINE then
+        if collectgarbage("count") > 1024*1024 then
+          collectgarbage("collect")
+        end
+          if coroutine.status(G.SCORING_COROUTINE) == "dead" then
+              G.SCORING_COROUTINE = nil
+              G.FUNCS.exit_overlay_menu()
+              local totalCalcs = 0
+              for i, v in pairs(G.CARD_CALC_COUNTS) do
+                totalCalcs = totalCalcs + v[1]
+              end
+              G.GAME.LAST_CALCS = totalCalcs
+          else
+              G.SCORING_TEXT = nil
+              if not G.OVERLAY_MENU then
+                  G.scoring_text = {"Calculating...", "", "", ""}
+                  G.SCORING_TEXT = { 
+                    {n = G.UIT.C, nodes = {
+                      {n = G.UIT.R, config = {padding = 0.1, align = "cm"}, nodes = {
+                      {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 1}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 1, silent = true})}},
+                      }},{n = G.UIT.R,  nodes = {
+                      {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 2}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                      }},{n = G.UIT.R,  nodes = {
+                      {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                      }},{n = G.UIT.R,  nodes = {
+                      {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
+                  }}}}}
+                  G.FUNCS.overlay_menu({
+                      definition = 
+                      {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
+                      config = {align="cm", offset = {x=0,y=0}, major = G.ROOM_ATTACH, bond = 'Weak'}
+                  })
+              else
 
-  if ret and type(ret) == "table" and ret.repetitions then
-    G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
-    G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
+                  if G.OVERLAY_MENU and G.scoring_text then
+                    local totalCalcs = 0
+                    for i, v in pairs(G.CARD_CALC_COUNTS) do
+                      totalCalcs = totalCalcs + v[1]
+                    end
+                    local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
+                    G.scoring_text[1] = "Calculating..."
+                    G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs)
+                    G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
+                    G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
+                  end
+
+              end
+        --this coroutine allows us to stagger GC cycles through
+        --the main source of waste in terms of memory (especially w joker retriggers) is through local variables that become garbage
+        --this practically eliminates the memory overhead of scoring
+        --event queue overhead seems to not exist if Talismans Disable Scoring Animations is off.
+        --event manager has to wait for scoring to finish until it can keep processing events anyways.
+
+              
+              G.LAST_SCORING_YIELD = love.timer.getTime()
+              
+              local success, msg = coroutine.resume(G.SCORING_COROUTINE)
+              if not success then
+                error(msg)
+              end
+          end
+      end
   end
+
+
+
+  TIME_BETWEEN_SCORING_FRAMES = 0.03 -- 30 fps during scoring
+  -- we dont want overhead from updates making scoring much slower
+  -- originally 10 fps, I think 30 fps is a good way to balance it while making it look smooth, too
+  --wrap everything in calculating contexts so we can do more things with it
   Talisman.calculating_joker = false
-  return ret
-end
-local cuc = Card.use_consumable
-function Card:use_consumable(x,y)
-  Talisman.calculating_score = true
-  local ret = cuc(self, x,y)
   Talisman.calculating_score = false
-  return ret
-end
-local gfep = G.FUNCS.evaluate_play
-G.FUNCS.evaluate_play = function(e)
-  Talisman.calculating_score = true
-  local ret = gfep(e)
-  Talisman.calculating_score = false
-  return ret
+  Talisman.calculating_card = false
+  Talisman.dollar_update = false
+  local ccj = Card.calculate_joker
+  function Card:calculate_joker(context)
+    --scoring coroutine
+    G.CURRENT_SCORING_CARD = self
+    G.CARD_CALC_COUNTS = G.CARD_CALC_COUNTS or {}
+    if G.CARD_CALC_COUNTS[self] then
+      G.CARD_CALC_COUNTS[self][1] = G.CARD_CALC_COUNTS[self][1] + 1
+    else
+      G.CARD_CALC_COUNTS[self] = {1, 1}
+    end
+
+
+    if G.LAST_SCORING_YIELD and ((love.timer.getTime() - G.LAST_SCORING_YIELD) > TIME_BETWEEN_SCORING_FRAMES) and coroutine.running() then
+          coroutine.yield()
+    end
+    Talisman.calculating_joker = true
+    local ret = ccj(self, context)
+
+    if ret and type(ret) == "table" and ret.repetitions then
+      G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
+      G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
+    end
+    Talisman.calculating_joker = false
+    return ret
+  end
+  local cuc = Card.use_consumable
+  function Card:use_consumable(x,y)
+    Talisman.calculating_score = true
+    local ret = cuc(self, x,y)
+    Talisman.calculating_score = false
+    return ret
+  end
+  local gfep = G.FUNCS.evaluate_play
+  G.FUNCS.evaluate_play = function(e)
+    Talisman.calculating_score = true
+    local ret = gfep(e)
+    Talisman.calculating_score = false
+    return ret
+  end
 end
 --[[local ec = eval_card
 function eval_card()
@@ -728,7 +731,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "X"..amount, colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'Xchip_mod' then
               if effect.xchip_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.xchip_message)
               else
@@ -746,7 +749,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^"..amount, colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'Echip_mod' then
               if effect.echip_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.echip_message)
               else
@@ -764,7 +767,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^^"..amount, colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'EEchip_mod' then
               if effect.eechip_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.eechip_message)
               else
@@ -782,7 +785,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^^^"..amount, colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'EEEchip_mod' then
               if effect.eeechip_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.eeechip_message)
               else
@@ -800,7 +803,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = (amount[1] > 5 and ('{' .. amount[1] .. '}') or string.rep('^', amount[1])) .. amount[2], colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'hyperchip_mod' then
               if effect.hyperchip_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.hyperchip_message)
               else
@@ -818,7 +821,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^"..amount.." Mult", colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'Emult_mod' then
               if effect.emult_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.emult_message)
               else
@@ -836,7 +839,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^^"..amount.." Mult", colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'EEmult_mod' then
               if effect.eemult_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.eemult_message)
               else
@@ -854,7 +857,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = "^^^"..amount.." Mult", colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'EEEmult_mod' then
               if effect.eeemult_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.eeemult_message)
               else
@@ -872,7 +875,7 @@ if SMODS and SMODS.calculate_individual_effect then
       if not effect.remove_default_message then
           if from_edition then
               card_eval_status_text(scored_card, 'jokers', nil, percent, nil, {message = ((amount[1] > 5 and ('{' .. amount[1] .. '}') or string.rep('^', amount[1])) .. amount[2]).." Mult", colour =  G.C.EDITION, edition = true})
-          else
+          elseif key ~= 'hypermult_mod' then
               if effect.hypermult_message then
                   card_eval_status_text(scored_card or effect.card or effect.focus, 'extra', nil, percent, nil, effect.hypermult_message)
               else
