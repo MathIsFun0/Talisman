@@ -721,7 +721,7 @@ if SMODS and SMODS.calculate_individual_effect then
     if ret then
       return ret
     end
-    if (key == 'x_chips' or key == 'Xchip_mod') and amount ~= 1 then 
+    if (key == 'x_chips' or key == 'xchips' or key == 'Xchip_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips * amount)
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -739,7 +739,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'e_chips' or key == 'Echip_mod') and amount ~= 1 then 
+    if (key == 'e_chips' or key == 'echips' or key == 'Echip_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips ^ amount)
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -757,7 +757,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'ee_chips' or key == 'EEchip_mod') and amount ~= 1 then 
+    if (key == 'ee_chips' or key == 'eechips' or key == 'EEchip_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips:arrow(2, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -775,7 +775,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'eee_chips' or key == 'EEEchip_mod') and amount ~= 1 then 
+    if (key == 'eee_chips' or key == 'eeechips' or key == 'EEEchip_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips:arrow(3, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -793,7 +793,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'hyper_chips' or key == 'hyperchip_mod') and type(amount) == 'table' then 
+    if (key == 'hyper_chips' or key == 'hyperchips' or key == 'hyperchip_mod') and type(amount) == 'table' then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips:arrow(amount[1], amount[2]))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -811,7 +811,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'e_mult' or key == 'Emult_mod') and amount ~= 1 then 
+    if (key == 'e_mult' or key == 'emult' or key == 'Emult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       mult = mod_chips(mult ^ amount)
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -829,7 +829,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'ee_mult' or key == 'EEmult_mod') and amount ~= 1 then 
+    if (key == 'ee_mult' or key == 'eemult' or key == 'EEmult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       mult = mod_chips(mult:arrow(2, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -847,7 +847,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'eee_mult' or key == 'EEEmult_mod') and amount ~= 1 then 
+    if (key == 'eee_mult' or key == 'eeemult' or key == 'EEEmult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       mult = mod_chips(mult:arrow(3, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -865,7 +865,7 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
 
-    if (key == 'hyper_mult' or key == 'hypermult_mod') and type(amount) == 'table' then 
+    if (key == 'hyper_mult' or key == 'hypermult' or key == 'hypermult_mod') and type(amount) == 'table' then 
       if effect.card then juice_card(effect.card) end
       mult = mod_chips(mult:arrow(amount[1], amount[2]))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -884,10 +884,10 @@ if SMODS and SMODS.calculate_individual_effect then
     end
   end
   for _, v in ipairs({'x_chips', 'e_mult', 'e_chips', 'ee_mult', 'ee_chips', 'eee_mult', 'eee_chips', 'hyper_mult', 'hyper_chips',
+                      'xchips', 'emult', 'echips', 'eemult', 'eechips', 'eeemult', 'eeechips', 'hypermult', 'hyperchips',
                       'Xchip_mod', 'Emult_mod', 'Echip_mod', 'EEmult_mod', 'EEchip_mod', 'EEEmult_mod', 'EEEchip_mod', 'hypermult_mod', 'hyperchip_mod'}) do
     table.insert(SMODS.calculation_keys, v)
   end
-  --todo: SMODS.eval_this hook
 end
 
 --some debugging functions
