@@ -547,8 +547,13 @@ if not Talisman.F_NO_COROUTINE then
     local ret = ccj(self, context)
 
     if ret and type(ret) == "table" and ret.repetitions then
-      G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
-      G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
+      if not ret.card then
+        G.CARD_CALC_COUNTS.other = G.CARD_CALC_COUNTS.other or {1,1}
+        G.CARD_CALC_COUNTS.other[2] = G.CARD_CALC_COUNTS.other[2] + ret.repetitions
+      else
+        G.CARD_CALC_COUNTS[ret.card] = G.CARD_CALC_COUNTS[ret.card] or {1,1}
+        G.CARD_CALC_COUNTS[ret.card][2] = G.CARD_CALC_COUNTS[ret.card][2] + ret.repetitions
+      end
     end
     Talisman.calculating_joker = false
     return ret

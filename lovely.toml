@@ -1257,3 +1257,28 @@ pattern = "type = 'save_run',"
 position = 'after'
 payload = 'talisman = Talisman.config_file.break_infinity,'
 match_indent = true
+
+# Fix some card_eval_status_text crashes
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "text = localize{type='variable',key='a_chips'..(amt<0 and '_minus' or ''),vars={math.abs(amt)}}"
+position = 'at'
+payload = "text = localize{type='variable',key='a_chips'..(to_big(amt)<to_big(0) and '_minus' or ''),vars={math.abs(amt)}}"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "text = localize{type='variable',key='a_mult'..(amt<0 and '_minus' or ''),vars={math.abs(amt)}}"
+position = 'at'
+payload = "text = localize{type='variable',key='a_mult'..(to_big(amt)<to_big(0) and '_minus' or ''),vars={math.abs(amt)}}"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = "text = localize{type='variable',key='a_xmult'..(amt<0 and '_minus' or ''),vars={math.abs(amt)}}"
+position = 'at'
+payload = "text = localize{type='variable',key='a_xmult'..(to_big(amt)<to_big(0) and '_minus' or ''),vars={math.abs(amt)}}"
+match_indent = true
