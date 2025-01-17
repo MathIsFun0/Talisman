@@ -498,6 +498,30 @@ if ((to_big(G.GAME.dollars)-to_big(G.GAME.bankrupt_at)) - to_big(10) >= to_big(0
 '''
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''if card.unlock_condition.extra <= G.GAME.dollars then'''
+position = "at"
+payload = '''if to_big(card.unlock_condition.extra) <= to_big(G.GAME.dollars) then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if self.ability.name == 'Bull' and (G.GAME.dollars + (G.GAME.dollar_buffer or 0)) > 0 then'''
+position = "at"
+payload = '''if self.ability.name == 'Bull' and to_big(G.GAME.dollars + (G.GAME.dollar_buffer or 0)) > to_big(0) then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if self.ability.name == 'Bootstraps' and math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/self.ability.extra.dollars) >= 1 then'''
+position = "at"
+payload = '''if self.ability.name == 'Bootstraps' and to_big(math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/self.ability.extra.dollars)) >= to_big(1) then'''
+match_indent = true
+
 # for now, I'm letting dollar eval ignore bignum, I'll patch it later
 [[patches]]
 [patches.pattern]
