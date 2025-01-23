@@ -466,6 +466,7 @@ if not Talisman.F_NO_COROUTINE then
                 totalCalcs = totalCalcs + v[1]
               end
               G.GAME.LAST_CALCS = totalCalcs
+              G.GAME.LAST_CALC_TIME = G.CURRENT_CALC_TIME
           else
               G.SCORING_TEXT = nil
               if not G.OVERLAY_MENU then
@@ -494,10 +495,11 @@ if not Talisman.F_NO_COROUTINE then
                       totalCalcs = totalCalcs + v[1]
                     end
                     local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
+                    G.CURRENT_CALC_TIME = (G.CURRENT_CALC_TIME or 0) + dt
                     G.scoring_text[1] = "Calculating..."
-                    G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs)
+                    G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs).." ("..tostring(number_format(G.CURRENT_CALC_TIME)).."s)"
                     G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
-                    G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown")
+                    G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown") .." ("..tostring(G.GAME.LAST_CALC_TIME and number_format(G.GAME.LAST_CALC_TIME) or "???").."s)"
                   end
 
               end
