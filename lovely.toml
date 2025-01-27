@@ -554,6 +554,20 @@ position = "at"
 payload = '''if self.ability.name == 'Bootstraps' and to_big(math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/self.ability.extra.dollars)) >= to_big(1) then'''
 match_indent = true
 
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+if self.ability.name == 'Vagabond' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+    if G.GAME.dollars <= self.ability.extra then
+'''
+position = "at"
+payload = '''
+if self.ability.name == 'Vagabond' and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+    if to_big(G.GAME.dollars) <= to_big(self.ability.extra) then
+'''
+match_indent = true
+
 # for now, I'm letting dollar eval ignore bignum, I'll patch it later
 [[patches]]
 [patches.pattern]
