@@ -241,6 +241,25 @@ if Talisman.config_file.break_infinity then
     end--]] --going to hold off on modifying this until proper save loading exists
   end
 
+  local ics = inc_career_stat
+  -- This is used often for unlocks, so we can't just prevent big money from being added
+  -- Also, I'm completely overriding this, since I don't think any mods would want to change it
+  function inc_career_stat(stat, mod)
+    if G.GAME.seeded or G.GAME.challenge then return end
+    if not G.PROFILES[G.SETTINGS.profile].career_stats[stat] then G.PROFILES[G.SETTINGS.profile].career_stats[stat] = 0 end
+    G.PROFILES[G.SETTINGS.profile].career_stats[stat] = G.PROFILES[G.SETTINGS.profile].career_stats[stat] + (mod or 0)
+    -- Make sure this isn't ever a talisman number
+    if type(G.PROFILES[G.SETTINGS.profile].career_stats[stat]) == 'table' then
+      if G.PROFILES[G.SETTINGS.profile].career_stats[stat] > to_big(1e300) then
+        G.PROFILES[G.SETTINGS.profile].career_stats[stat] = to_big(1e300)
+      elseif G.PROFILES[G.SETTINGS.profile].career_stats[stat] < to_big(-1e300) then
+        G.PROFILES[G.SETTINGS.profile].career_stats[stat] = to_big(-1e300)
+      end
+      G.PROFILES[G.SETTINGS.profile].career_stats[stat] = G.PROFILES[G.SETTINGS.profile].career_stats[stat]:to_number()
+    end
+    G:save_settings()
+  end
+
   local sn = scale_number
   function scale_number(number, scale, max, e_switch_point)
     if not Big then return sn(number, scale, max, e_switch_point) end

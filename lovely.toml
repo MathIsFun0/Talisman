@@ -538,6 +538,7 @@ position = "at"
 payload = '''if to_big(card.unlock_condition.extra) <= to_big(G.GAME.dollars) then'''
 match_indent = true
 
+# Talisman compat for vanilla jokers 
 [[patches]]
 [patches.pattern]
 target = "card.lua"
@@ -552,6 +553,15 @@ target = "card.lua"
 pattern = '''if self.ability.name == 'Bootstraps' and math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/self.ability.extra.dollars) >= 1 then'''
 position = "at"
 payload = '''if self.ability.name == 'Bootstraps' and to_big(math.floor((G.GAME.dollars + (G.GAME.dollar_buffer or 0))/self.ability.extra.dollars)) >= to_big(1) then'''
+match_indent = true
+
+# Vagabond
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''if G.GAME.dollars <= self.ability.extra then'''
+position = "at"
+payload = '''if to_big(G.GAME.dollars) <= to_big(self.ability.extra) then'''
 match_indent = true
 
 # for now, I'm letting dollar eval ignore bignum, I'll patch it later
