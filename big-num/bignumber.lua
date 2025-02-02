@@ -328,6 +328,11 @@ function Big.parse(str)
     return Big:new(tonumber(parts[1]), math.floor(tonumber(parts[2]))):normalized()
 end
 
+function BigMeta.__concat(a, b)
+    a = Big:create(a)
+    return tostring(a) .. tostring(b)
+end
+
 --Adding things OmegaNum has that this doesn't...
 R = {}
 

@@ -1334,6 +1334,11 @@ function OmegaMeta.__tostring(b)
     return number_format(b)
 end
 
+function OmegaMeta.__concat(a, b)
+    a = Big:create(a)
+    return tostring(a) .. tostring(b)
+end
+
 
 ---------------------------------------
 
