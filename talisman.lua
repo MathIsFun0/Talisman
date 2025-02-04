@@ -565,7 +565,7 @@ if not Talisman.F_NO_COROUTINE then
           coroutine.yield()
     end
     Talisman.calculating_joker = true
-    local ret = ccj(self, context)
+    local ret, trig = ccj(self, context)
 
     if ret and type(ret) == "table" and ret.repetitions then
       if not ret.card then
@@ -577,7 +577,7 @@ if not Talisman.F_NO_COROUTINE then
       end
     end
     Talisman.calculating_joker = false
-    return ret
+    return ret, trig
   end
   local cuc = Card.use_consumable
   function Card:use_consumable(x,y)
