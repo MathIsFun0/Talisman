@@ -746,6 +746,13 @@ end
 
 -- Steamodded calculation API: add extra operations
 if SMODS and SMODS.calculate_individual_effect then
+  local smods_xchips = false
+  for _, v in pairs(SMODS.calculation_keys) do
+    if v == 'x_chips' then
+      smods_xchips = true
+      break
+    end
+  end
   local scie = SMODS.calculate_individual_effect
   function SMODS.calculate_individual_effect(effect, scored_card, key, amount, from_edition)
     -- For some reason, some keys' animations are completely removed
@@ -757,7 +764,7 @@ if SMODS and SMODS.calculate_individual_effect then
     if ret then
       return ret
     end
-    if (key == 'x_chips' or key == 'xchips' or key == 'Xchip_mod') and amount ~= 1 then 
+    if not smods_xchips and (key == 'x_chips' or key == 'xchips' or key == 'Xchip_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
       hand_chips = mod_chips(hand_chips * amount)
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
@@ -919,10 +926,15 @@ if SMODS and SMODS.calculate_individual_effect then
       return true
     end
   end
-  for _, v in ipairs({'x_chips', 'e_mult', 'e_chips', 'ee_mult', 'ee_chips', 'eee_mult', 'eee_chips', 'hyper_mult', 'hyper_chips',
-                      'xchips', 'emult', 'echips', 'eemult', 'eechips', 'eeemult', 'eeechips', 'hypermult', 'hyperchips',
-                      'Xchip_mod', 'Emult_mod', 'Echip_mod', 'EEmult_mod', 'EEchip_mod', 'EEEmult_mod', 'EEEchip_mod', 'hypermult_mod', 'hyperchip_mod'}) do
+  for _, v in ipairs({'e_mult', 'e_chips', 'ee_mult', 'ee_chips', 'eee_mult', 'eee_chips', 'hyper_mult', 'hyper_chips',
+                      'emult', 'echips', 'eemult', 'eechips', 'eeemult', 'eeechips', 'hypermult', 'hyperchips',
+                      'Emult_mod', 'Echip_mod', 'EEmult_mod', 'EEchip_mod', 'EEEmult_mod', 'EEEchip_mod', 'hypermult_mod', 'hyperchip_mod'}) do
     table.insert(SMODS.calculation_keys, v)
+  end
+  if not smods_xchips then
+    for _, v in ipairs({'x_chips', 'xchips', 'Xchip_mod'}) do
+    table.insert(SMODS.calculation_keys, v)
+  end
   end
 end
 
