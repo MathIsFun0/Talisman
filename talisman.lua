@@ -856,7 +856,7 @@ if SMODS and SMODS.calculate_individual_effect then
 
     if (key == 'e_mult' or key == 'emult' or key == 'Emult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
-      mult = mod_chips(mult ^ amount)
+      mult = mod_mult(mult ^ amount)
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
           if from_edition then
@@ -874,7 +874,7 @@ if SMODS and SMODS.calculate_individual_effect then
 
     if (key == 'ee_mult' or key == 'eemult' or key == 'EEmult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
-      mult = mod_chips(mult:arrow(2, amount))
+      mult = mod_mult(mult:arrow(2, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
           if from_edition then
@@ -892,7 +892,7 @@ if SMODS and SMODS.calculate_individual_effect then
 
     if (key == 'eee_mult' or key == 'eeemult' or key == 'EEEmult_mod') and amount ~= 1 then 
       if effect.card then juice_card(effect.card) end
-      mult = mod_chips(mult:arrow(3, amount))
+      mult = mod_mult(mult:arrow(3, amount))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
           if from_edition then
@@ -910,7 +910,7 @@ if SMODS and SMODS.calculate_individual_effect then
 
     if (key == 'hyper_mult' or key == 'hypermult' or key == 'hypermult_mod') and type(amount) == 'table' then 
       if effect.card then juice_card(effect.card) end
-      mult = mod_chips(mult:arrow(amount[1], amount[2]))
+      mult = mod_mult(mult:arrow(amount[1], amount[2]))
       update_hand_text({delay = 0}, {chips = hand_chips, mult = mult})
       if not effect.remove_default_message then
           if from_edition then
