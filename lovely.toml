@@ -564,6 +564,15 @@ position = "at"
 payload = '''if to_big(G.GAME.dollars) <= to_big(self.ability.extra) then'''
 match_indent = true
 
+# Luxury Tax Challenge
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = '''self:change_size(self.config.last_poll_size - math.floor(G.GAME.dollars/G.GAME.modifiers.minus_hand_size_per_X_dollar))'''
+position = "at"
+payload = '''self:change_size(to_big(self.config.last_poll_size - math.floor(G.GAME.dollars/G.GAME.modifiers.minus_hand_size_per_X_dollar)):to_number())'''
+match_indent = true
+
 # for now, I'm letting dollar eval ignore bignum, I'll patch it later
 [[patches]]
 [patches.pattern]
