@@ -384,6 +384,10 @@ local jc = juice_card
 function juice_card(x)
     if not Talisman.config_file.disable_anims then jc(x) end
 end
+local cju = Card.juice_up
+function Card:juice_up(...)
+    if not Talisman.config_file.disable_anims then cju(self, ...) end
+end
 function tal_uht(config, vals)
     local col = G.C.GREEN
     if vals.chips and G.GAME.current_round.current_hand.chips ~= vals.chips then
@@ -420,7 +424,7 @@ function tal_uht(config, vals)
         else
             G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
             if is_number(vals.level) then 
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_big(math.min(vals.level, 7)):to_number()]
+                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and vals.level or to_big(math.min(vals.level, 7)):to_number()]
             else
                 G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
             end
@@ -469,15 +473,20 @@ if not Talisman.F_NO_COROUTINE then
       end
   end
 
+  function G.FUNCS.tal_abort()
+      tal_aborted = true
+  end
 
   local oldupd = love.update
+
+  Talisman.scoring_state = "Idle"
   function love.update(dt, ...)
       oldupd(dt, ...)
       if G.SCORING_COROUTINE then
         if collectgarbage("count") > 1024*1024 then
           collectgarbage("collect")
         end
-          if coroutine.status(G.SCORING_COROUTINE) == "dead" then
+          if coroutine.status(G.SCORING_COROUTINE) == "dead" or tal_aborted then
               G.SCORING_COROUTINE = nil
               G.FUNCS.exit_overlay_menu()
               local totalCalcs = 0
@@ -486,6 +495,133 @@ if not Talisman.F_NO_COROUTINE then
               end
               G.GAME.LAST_CALCS = totalCalcs
               G.GAME.LAST_CALC_TIME = G.CURRENT_CALC_TIME
+              G.CURRENT_CALC_TIME = 0
+              if tal_aborted then --some animations are still missing
+                if SMODS and G.GAME.current_round.current_hand.chips ~= 0 then
+                  -- Plug in current score
+                  -- Ew hardcoding... stinky!
+                  G.E_MANAGER:add_event(Event({
+                    trigger = 'after',delay = 0.4,
+                    func = (function()  update_hand_text({delay = 0, immediate = true}, {mult = 0, chips = 0, chip_total = G.GAME.blind.cry_cap_score and G.GAME.blind:cry_cap_score(math.floor(hand_chips*mult)) or math.floor(hand_chips*mult), level = '', handname = ''});play_sound('button', 0.9, 0.6);return true end)
+                  }))
+                      G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = (function() G.GAME.current_round.current_hand.cry_asc_num = 0;G.GAME.current_round.current_hand.cry_asc_num_text = '';return true end)
+                      }))
+                  check_and_set_high_score('hand', hand_chips*mult)
+            
+                  check_for_unlock({type = 'chip_score', chips = math.floor(hand_chips*mult)})
+               
+                  if to_big(hand_chips)*mult > to_big(0) then
+                      delay(0.8)
+                      G.E_MANAGER:add_event(Event({
+                      trigger = 'immediate',
+                      func = (function() play_sound('chips2');return true end)
+                      }))
+                  end
+                  G.E_MANAGER:add_event(Event({
+                    trigger = 'ease',
+                    blocking = false,
+                    ref_table = G.GAME,
+                    ref_value = 'chips',
+                    ease_to = G.GAME.chips + (G.GAME.blind.cry_cap_score and G.GAME.blind:cry_cap_score(math.floor(hand_chips*mult)) or math.floor(hand_chips*mult)),
+                    delay =  0.5,
+                    func = (function(t) return math.floor(t) end)
+                  }))
+                  G.E_MANAGER:add_event(Event({
+                    trigger = 'ease',
+                    blocking = true,
+                    ref_table = G.GAME.current_round.current_hand,
+                    ref_value = 'chip_total',
+                    ease_to = 0,
+                    delay =  0.5,
+                    func = (function(t) return math.floor(t) end)
+                  }))
+                  G.E_MANAGER:add_event(Event({
+                    trigger = 'immediate',
+                    func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
+                  }))
+                  delay(0.3)
+                  -- context.after calculations
+                  SMODS.calculate_context({full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
+                  
+                  -- TARGET: effects after hand evaluation
+                  G.E_MANAGER:add_event(Event({
+                    func = function()
+                      G.GAME.cry_exploit_override = nil
+                      return true
+                    end
+                  }))
+
+                  G.E_MANAGER:add_event(Event({
+                      trigger = 'immediate',
+                      func = (function()     
+                          if G.GAME.modifiers.debuff_played_cards then 
+                              for k, v in ipairs(scoring_hand) do v.ability.perma_debuff = true end
+                          end
+                      return true end)
+                    }))
+                  elseif G.GAME.current_round.current_hand.chips ~= 0 then
+                    G.E_MANAGER:add_event(Event({
+                      trigger = 'after',delay = 0.4,
+                      func = (function()  update_hand_text({delay = 0, immediate = true}, {mult = 0, chips = 0, chip_total = math.floor(hand_chips*mult), level = '', handname = ''});play_sound('button', 0.9, 0.6);return true end)
+                    }))
+                    check_and_set_high_score('hand', hand_chips*mult)
+              
+                    check_for_unlock({type = 'chip_score', chips = math.floor(hand_chips*mult)})
+                 
+                    if hand_chips*mult > 0 then 
+                        delay(0.8)
+                        G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = (function() play_sound('chips2');return true end)
+                        }))
+                    end
+                    G.E_MANAGER:add_event(Event({
+                      trigger = 'ease',
+                      blocking = false,
+                      ref_table = G.GAME,
+                      ref_value = 'chips',
+                      ease_to = G.GAME.chips + math.floor(hand_chips*mult),
+                      delay =  0.5,
+                      func = (function(t) return math.floor(t) end)
+                    }))
+                    G.E_MANAGER:add_event(Event({
+                      trigger = 'ease',
+                      blocking = true,
+                      ref_table = G.GAME.current_round.current_hand,
+                      ref_value = 'chip_total',
+                      ease_to = 0,
+                      delay =  0.5,
+                      func = (function(t) return math.floor(t) end)
+                    }))
+                    G.E_MANAGER:add_event(Event({
+                      trigger = 'immediate',
+                      func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
+                    }))
+                    delay(0.3)
+                
+                    for i=1, #G.jokers.cards do
+                        --calculate the joker after hand played effects
+                        local effects = eval_card(G.jokers.cards[i], {cardarea = G.jokers, full_hand = G.play.cards, scoring_hand = scoring_hand, scoring_name = text, poker_hands = poker_hands, after = true})
+                        if effects.jokers then
+                            card_eval_status_text(G.jokers.cards[i], 'jokers', nil, percent, nil, effects.jokers)
+                            percent = percent + percent_delta
+                        end
+                    end
+                
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = (function()     
+                            if G.GAME.modifiers.debuff_played_cards then 
+                                for k, v in ipairs(scoring_hand) do v.ability.perma_debuff = true end
+                            end
+                        return true end)
+                      }))
+                  end
+              end
+              tal_aborted = nil
+              Talisman.scoring_state = "Idle"
           else
               G.SCORING_TEXT = nil
               if not G.OVERLAY_MENU then
@@ -500,7 +636,15 @@ if not Talisman.F_NO_COROUTINE then
                       {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 3}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
                       }},{n = G.UIT.R,  nodes = {
                       {n=G.UIT.O, config={object = DynaText({string = {{ref_table = G.scoring_text, ref_value = 4}}, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, pop_in = 0, scale = 0.4, silent = true})}},
-                  }}}}}
+                      }},{n = G.UIT.R,  nodes = {
+                      UIBox_button({
+                        colour = G.C.BLUE,
+                        button = "tal_abort",
+                        label = { "Abort" },
+                        minw = 4.5,
+                        focus_args = { snap_to = true },
+                      })}},
+                    }}}
                   G.FUNCS.overlay_menu({
                       definition = 
                       {n=G.UIT.ROOT, minw = G.ROOM.T.w*5, minh = G.ROOM.T.h*5, config={align = "cm", padding = 9999, offset = {x = 0, y = -3}, r = 0.1, colour = {G.C.GREY[1], G.C.GREY[2], G.C.GREY[3],0.7}}, nodes= G.SCORING_TEXT}, 
@@ -935,6 +1079,13 @@ if SMODS and SMODS.calculate_individual_effect then
     for _, v in ipairs({'x_chips', 'xchips', 'Xchip_mod'}) do
     table.insert(SMODS.calculation_keys, v)
   end
+  end
+
+  -- prvent juice animations
+  local smce = SMODS.calculate_effect
+  function SMODS.calculate_effect(effect, ...)
+    if Talisman.config_file.disable_anims then effect.juice_card = nil end
+    return smce(effect, ...)
   end
 end
 
