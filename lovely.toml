@@ -1357,3 +1357,76 @@ pattern = "text = localize{type='variable',key='a_xmult'..(amt<0 and '_minus' or
 position = 'at'
 payload = "text = localize{type='variable',key='a_xmult'..(to_big(amt)<to_big(0) and '_minus' or ''),vars={math.abs(amt)}}"
 match_indent = true
+
+# Fully split up evaluate_play
+# This allows mods' lovely patches to still work fine while also letting Talisman's abort feature work
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = "G.FUNCS.evaluate_play = function(e)"
+position = 'at'
+payload = "function evaluate_play_intro()"
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = "if not G.GAME.blind:debuff_hand(G.play.cards, poker_hands, text) then"
+position = 'at'
+payload = '''return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
+end
+function evaluate_play_main(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''
+else
+    mult = mod_mult(0)
+'''
+position = 'at'
+payload = '''
+return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
+end
+function evaluate_play_debuff(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+	mult = mod_mult(0)
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''
+end
+G.E_MANAGER:add_event(Event({
+	trigger = 'after',delay = 0.4,
+'''
+position = 'at'
+payload = '''
+return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
+end
+function evaluate_play_final_scoring(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+G.E_MANAGER:add_event(Event({
+	trigger = 'after',delay = 0.4,
+'''
+match_indent = true
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''
+	func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
+}))
+delay(0.3)
+'''
+position = 'at'
+payload = '''
+	func = (function() G.GAME.current_round.current_hand.handname = '';return true end)
+}))
+delay(0.3)
+return text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta
+end
+function evaluate_play_after(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
+'''
+match_indent = true
