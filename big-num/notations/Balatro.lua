@@ -15,7 +15,9 @@ end
 function BalaNotation:format(n, places)
     --vanilla balatro number_format function basically
     local function e_ify(num)
-        num = num and num:to_number() or 0
+        if type(num) == "table" then
+            num = num:to_number()
+        end
         if num >= 10^6 then
             local x = string.format("%.4g",num)
             local fac = math.floor(math.log(tonumber(x), 10))
