@@ -127,17 +127,54 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
+  local function lenient_bignum(x)
+    if type(x) == "number" then return x end
+    if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
+      return x:to_number()
+    end
+    return x
+  end
+
+  --prevent some log-related crashes
+  local sns = score_number_scale
+  function score_number_scale(scale, amt)
+    local ret = sns(scale, amt)
+    if type(ret) == "table" then
+      if ret > to_big(1e300) then return 1e300 end
+      return ret:to_number()
+    end
+  end
+
+  local gftsj = G.FUNCS.text_super_juice
+  function G.FUNCS.text_super_juice(e, _amount)
+    if type(_amount) == "table" then
+      if _amount > to_big(1e300) then
+        _amount = 1e300
+      else
+        _amount = _amount:to_number()
+      end
+    end
+    return gftsj(e, _amount)
+  end
+
   local l10 = math.log10
   function math.log10(x)
-      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-      return l10(x)
+      if type(x) == 'table' then 
+        if x.log10 then return lenient_bignum(x:log10()) end
+        return lenient_bignum(l10(math.min(x:to_number(),1e300)))
+      end
+      return lenient_bignum(l10(x))
   end
 
   local lg = math.log
   function math.log(x, y)
       if not y then y = 2.718281828459045 end
-      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
-      return lg(x,y)
+      if type(x) == 'table' then 
+        if x.log then return lenient_bignum(x:log(to_big(y))) end
+        if x.logBase then return lenient_bignum(x:logBase(to_big(y))) end
+        return lenient_bignum(lg(math.min(x:to_number(),1e300),y))
+      end
+      return lenient_bignum(lg(x,y))
   end
 
   if SMODS then
