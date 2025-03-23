@@ -129,6 +129,7 @@ if Talisman.config_file.break_infinity then
 
   local l10 = math.log10
   function math.log10(x)
+      if x.log10 then return x:log10(to_big(y)) end
       if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
       return l10(x)
   end
@@ -136,7 +137,11 @@ if Talisman.config_file.break_infinity then
   local lg = math.log
   function math.log(x, y)
       if not y then y = 2.718281828459045 end
-      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
+      if type(x) == 'table' then 
+        if x.log then return x:log(to_big(y)) end
+        if x.logBase then return x:logBase(to_big(y)) end
+        return lg(math.min(x:to_number(),1e300),y) 
+      end
       return lg(x,y)
   end
 
