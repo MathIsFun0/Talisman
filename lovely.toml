@@ -468,7 +468,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.min(vals.level, 7)]"
 position = "at"
-payload = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_big(math.min(vals.level, 7)):to_number()]"
+payload = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_number(to_big(math.min(vals.level, 7)))]"
 match_indent = true
 
 [[patches]]
