@@ -127,22 +127,32 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
+  local function lenient_bignum(x)
+    if type(x) == "number" then return x end
+    if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
+      return x:to_number()
+    end
+    return x
+  end
+
   local l10 = math.log10
   function math.log10(x)
-      if x.log10 then return x:log10(to_big(y)) end
-      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-      return l10(x)
+      if type(x) == 'table' then 
+        if x.log10 then return lenient_bignum(x:log10()) end
+        return lenient_bignum(l10(math.min(x:to_number(),1e300)))
+      end
+      return lenient_bignum(l10(x))
   end
 
   local lg = math.log
   function math.log(x, y)
       if not y then y = 2.718281828459045 end
       if type(x) == 'table' then 
-        if x.log then return x:log(to_big(y)) end
-        if x.logBase then return x:logBase(to_big(y)) end
-        return lg(math.min(x:to_number(),1e300),y) 
+        if x.log then return lenient_bignum(x:log(to_big(y))) end
+        if x.logBase then return lenient_bignum(x:logBase(to_big(y))) end
+        return lenient_bignum(lg(math.min(x:to_number(),1e300),y))
       end
-      return lg(x,y)
+      return lenient_bignum(lg(x,y))
   end
 
   if SMODS then
