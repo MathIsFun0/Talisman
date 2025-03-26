@@ -328,7 +328,11 @@ if Talisman.config_file.break_infinity then
 
   local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
-    if _amount > 2 then _amount = 2 end
+    if type(_amount) == 'table' then
+      if _amount > to_big(2) then _amount = 2 end
+    else
+      if _amount > 2 then _amount = 2 end
+    end
     return tsj(e, _amount)
   end
 
