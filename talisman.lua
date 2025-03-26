@@ -143,6 +143,7 @@ if Talisman.config_file.break_infinity then
       if ret > to_big(1e300) then return 1e300 end
       return ret:to_number()
     end
+    return ret
   end
 
   local gftsj = G.FUNCS.text_super_juice
