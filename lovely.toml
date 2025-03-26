@@ -1487,3 +1487,28 @@ payload = '''if type(_F.intensity) == "table" then
 end
 '''
 match_indent = true
+
+# G.funcs.evaluate_play()
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+position = 'at'
+match_indent = true
+pattern = '''
+G.E_MANAGER:add_event(Event({
+    trigger = 'immediate',
+    func = function()
+        G.FUNCS.evaluate_play()
+        return true
+    end
+}))
+'''
+payload = '''
+G.E_MANAGER:add_event(Event({
+    trigger = 'immediate',
+    func = function()
+        G.FUNCS.evaluate_play(e)
+        return true
+    end
+}))
+'''

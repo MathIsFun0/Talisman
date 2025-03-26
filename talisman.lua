@@ -520,11 +520,11 @@ if not Talisman.F_NO_COROUTINE then
   --scoring coroutine
   local oldplay = G.FUNCS.evaluate_play
 
-  function G.FUNCS.evaluate_play()
+  function G.FUNCS.evaluate_play(...)
       G.SCORING_COROUTINE = coroutine.create(oldplay)
       G.LAST_SCORING_YIELD = love.timer.getTime()
       G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-      local success, err = coroutine.resume(G.SCORING_COROUTINE)
+      local success, err = coroutine.resume(G.SCORING_COROUTINE, ...)
       if not success then
         error(err)
       end
