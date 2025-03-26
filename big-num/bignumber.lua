@@ -255,8 +255,10 @@ function Big:compare(b)
         return -1
     end
 
-    if self.e > b.e then return 1 end
-    if self.e < b.e then return -1 end
+    if self.e > b.e and self:is_positive() then return 1 end
+    if self.e < b.e and self:is_positive() then return -1 end
+    if self.e > b.e and self:is_negative() then return -1 end
+    if self.e < b.e and self:is_negative() then return 1 end
 
     if self.m > b.m then return 1 end
     if self.m < b.m then return -1 end
