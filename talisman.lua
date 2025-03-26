@@ -178,6 +178,12 @@ if Talisman.config_file.break_infinity then
       return lenient_bignum(lg(x,y))
   end
 
+  function math.exp(x)
+    local big_e = to_big(2.718281828459045)
+    
+    return lenient_bignum(big_e:pow(x))
+  end 
+
   if SMODS then
     function SMODS.get_blind_amount(ante)
       local k = to_big(0.75)
