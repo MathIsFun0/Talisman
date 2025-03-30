@@ -394,7 +394,9 @@ function is_number(x)
 end
 
 function to_big(x, y)
-  if Big and Big.m then
+  if type(x) == 'string' and x == "0" then --hack for when 0 is asked to be a bignumber need to really figure out the fix
+    return 0
+  elseif Big and Big.m then
     return Big:new(x,y)
   elseif Big and Big.array then
     local result = Big:create(x)
