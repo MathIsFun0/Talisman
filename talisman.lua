@@ -127,7 +127,7 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
-  local function lenient_bignum(x)
+function lenient_bignum(x)
     if type(x) == "number" then return x end
     if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
       return x:to_number()
