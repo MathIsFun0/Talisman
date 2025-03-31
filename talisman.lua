@@ -127,7 +127,7 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
-  local function lenient_bignum(x)
+function lenient_bignum(x)
     if type(x) == "number" then return x end
     if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
       return x:to_number()
@@ -143,6 +143,7 @@ if Talisman.config_file.break_infinity then
       if ret > to_big(1e300) then return 1e300 end
       return ret:to_number()
     end
+    return ret
   end
 
   local gftsj = G.FUNCS.text_super_juice
@@ -176,6 +177,12 @@ if Talisman.config_file.break_infinity then
       end
       return lenient_bignum(lg(x,y))
   end
+
+  function math.exp(x)
+    local big_e = to_big(2.718281828459045)
+    
+    return lenient_bignum(big_e:pow(x))
+  end 
 
   if SMODS then
     function SMODS.get_blind_amount(ante)
@@ -321,7 +328,11 @@ if Talisman.config_file.break_infinity then
 
   local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
-    if _amount > 2 then _amount = 2 end
+    if type(_amount) == 'table' then
+      if _amount > to_big(2) then _amount = 2 end
+    else
+      if _amount > 2 then _amount = 2 end
+    end
     return tsj(e, _amount)
   end
 
@@ -383,7 +394,9 @@ function is_number(x)
 end
 
 function to_big(x, y)
-  if Big and Big.m then
+  if type(x) == 'string' and x == "0" then --hack for when 0 is asked to be a bignumber need to really figure out the fix
+    return 0
+  elseif Big and Big.m then
     return Big:new(x,y)
   elseif Big and Big.array then
     local result = Big:create(x)
@@ -519,11 +532,11 @@ if not Talisman.F_NO_COROUTINE then
   --scoring coroutine
   local oldplay = G.FUNCS.evaluate_play
 
-  function G.FUNCS.evaluate_play()
+  function G.FUNCS.evaluate_play(...)
       G.SCORING_COROUTINE = coroutine.create(oldplay)
       G.LAST_SCORING_YIELD = love.timer.getTime()
       G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-      local success, err = coroutine.resume(G.SCORING_COROUTINE)
+      local success, err = coroutine.resume(G.SCORING_COROUTINE, ...)
       if not success then
         error(err)
       end
