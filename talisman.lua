@@ -473,8 +473,8 @@ function tal_uht(config, vals)
             G.GAME.current_round.current_hand.hand_level = vals.level
         else
             G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
-            if is_number(vals.level) then 
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and vals.level or to_big(math.min(vals.level, 7)):to_number()]
+            if is_number(vals.level) then
+                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and math.floor(math.min(vals.level, 7)) or math.floor(to_big(math.min(vals.level, 7)):to_number())]
             else
                 G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
             end
