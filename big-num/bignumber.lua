@@ -242,13 +242,26 @@ function Big:compare(b)
         return -1
     end
 
-    if self.e > b.e then return 1 end
-    if self.e < b.e then return -1 end
+    if self.m == 0 and self.e == 0 and b:is_negative() then
+        return 1
+    end
+    if self.m == 0 and self.e == 0 and b:is_positive() then
+        return -1
+    end
+    if self:is_positive() and b.m == 0 and b.e == 0 then
+        return 1
+    end
+    if self:is_negative() and b.m == 0 and b.e == 0 then
+        return -1
+    end
 
-    if self:is_positive() and self.m > b.m then return 1 end
-    if self:is_positive() and self.m < b.m then return -1 end
-    if self:is_negative() and self.m > b.m then return -1 end
-    if self:is_negative() and self.m < b.m then return 1 end
+    if self.e > b.e and self:is_positive() then return 1 end
+    if self.e < b.e and self:is_positive() then return -1 end
+    if self.e > b.e and self:is_negative() then return -1 end
+    if self.e < b.e and self:is_negative() then return 1 end
+
+    if self.m > b.m then return 1 end
+    if self.m < b.m then return -1 end
 end
 
 function Big:gt(b)
