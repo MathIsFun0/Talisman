@@ -468,7 +468,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[math.min(vals.level, 7)]"
 position = "at"
-payload = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_big(math.min(vals.level, 7)):to_number()]"
+payload = "G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[to_number(to_big(math.min(vals.level, 7)))]"
 match_indent = true
 
 [[patches]]
@@ -476,7 +476,7 @@ match_indent = true
 target = "functions/common_events.lua"
 pattern = "colours = {(G.GAME.hands[cfg.hand_type].level==1 and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[math.min(7, G.GAME.hands[cfg.hand_type].level)])}"
 position = "at"
-payload = "colours = {(to_big(G.GAME.hands[cfg.hand_type].level)==to_big(1) and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[to_big(math.min(7, G.GAME.hands[cfg.hand_type].level)):to_number()])}"
+payload = "colours = {(to_big(G.GAME.hands[cfg.hand_type].level)==to_big(1) and G.C.UI.TEXT_DARK or G.C.HAND_LEVELS[to_number(to_big(math.min(7, G.GAME.hands[cfg.hand_type].level)))])}"
 match_indent = true
 
 [[patches]]
@@ -484,7 +484,7 @@ match_indent = true
 target = "functions/UI_definitions.lua"
 pattern = '{n=G.UIT.C, config={align = "cm", padding = 0.01, r = 0.1, colour = G.C.HAND_LEVELS[math.min(7, G.GAME.hands[handname].level)], minw = 1.5, outline = 0.8, outline_colour = G.C.WHITE}, nodes={'
 position = "at"
-payload = '{n=G.UIT.C, config={align = "cm", padding = 0.01, r = 0.1, colour = G.C.HAND_LEVELS[to_big(math.min(7, G.GAME.hands[handname].level)):to_number()], minw = 1.5, outline = 0.8, outline_colour = G.C.WHITE}, nodes={'
+payload = '{n=G.UIT.C, config={align = "cm", padding = 0.01, r = 0.1, colour = G.C.HAND_LEVELS[to_number(to_big(math.min(7, G.GAME.hands[handname].level)))], minw = 1.5, outline = 0.8, outline_colour = G.C.WHITE}, nodes={'
 match_indent = true
 
 # money fixes
@@ -1412,6 +1412,7 @@ G.E_MANAGER:add_event(Event({
 	trigger = 'after',delay = 0.4,
 '''
 match_indent = true
+
 [[patches]]
 [patches.pattern]
 target = 'functions/state_events.lua'
@@ -1430,3 +1431,84 @@ end
 function evaluate_play_after(text, disp_text, poker_hands, scoring_hand, non_loc_disp_text, percent, percent_delta)
 '''
 match_indent = true
+
+# Let shaders not use bignums
+[[patches]]
+[patches.pattern]
+target = 'engine/sprite.lua'
+pattern = "G.SHADERS[_shader]:send(v.name, v.val or (v.func and v.func()) or v.ref_table[v.ref_value])"
+position = 'at'
+payload = '''local val = v.val or (v.func and v.func()) or v.ref_table[v.ref_value]
+if type(val) == "table" and is_number(val) then
+	if val > to_big(1e300) then
+		val = 1e300
+	else
+		val = val:tonumber()
+	end
+end
+G.SHADERS[_shader]:send(v.name, val)'''
+match_indent = true
+
+# Let ambient sounds not use bignums
+[[patches]]
+[patches.pattern]
+target = 'functions/misc_functions.lua'
+pattern = "AC[k].vol = (not G.video_organ and G.STATE == G.STATES.SPLASH) and 0 or AC[k].vol and v.volfunc(AC[k].vol) or 0"
+position = 'after'
+payload = '''
+if type(AC[k].vol) == "table" then
+	if AC[k].vol > to_big(1e300) then
+		AC[k].vol = 1e300
+	else
+		AC[k].vol = AC[k].vol:to_number()
+	end
+end
+if type(AC[k].per) == "table" then
+	if AC[k].per > to_big(1e300) then
+		AC[k].per = 1e300
+	else
+		AC[k].per = AC[k].per:to_number()
+	end
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/button_callbacks.lua'
+pattern = "_F.intensity = ((G.pack_cards and not G.pack_cards.REMOVED) or (G.TAROT_INTERRUPT)) and 0 or math.max(0., math.log(G.ARGS.score_intensity.earned_score, 5)-2)"
+position = 'after'
+payload = '''if type(_F.intensity) == "table" then
+	if _F.intensity > to_big(1e300) then
+		_F.intensity = 1e300
+	else
+		_F.intensity = _F.intensity:to_number()
+	end
+end
+'''
+match_indent = true
+
+# G.funcs.evaluate_play()
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+position = 'at'
+match_indent = true
+pattern = '''
+G.E_MANAGER:add_event(Event({
+    trigger = 'immediate',
+    func = function()
+        G.FUNCS.evaluate_play()
+        return true
+    end
+}))
+'''
+payload = '''
+G.E_MANAGER:add_event(Event({
+    trigger = 'immediate',
+    func = function()
+        G.FUNCS.evaluate_play(e)
+        return true
+    end
+}))
+'''

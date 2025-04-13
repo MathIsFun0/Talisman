@@ -127,18 +127,62 @@ if Talisman.config_file.break_infinity then
       return mc(x)
   end
 
+function lenient_bignum(x)
+    if type(x) == "number" then return x end
+    if to_big(x) < to_big(1e300) and to_big(x) > to_big(-1e300) then
+      return x:to_number()
+    end
+    return x
+  end
+
+  --prevent some log-related crashes
+  local sns = score_number_scale
+  function score_number_scale(scale, amt)
+    local ret = sns(scale, amt)
+    if type(ret) == "table" then
+      if ret > to_big(1e300) then return 1e300 end
+      return ret:to_number()
+    end
+    return ret
+  end
+
+  local gftsj = G.FUNCS.text_super_juice
+  function G.FUNCS.text_super_juice(e, _amount)
+    if type(_amount) == "table" then
+      if _amount > to_big(1e300) then
+        _amount = 1e300
+      else
+        _amount = _amount:to_number()
+      end
+    end
+    return gftsj(e, _amount)
+  end
+
   local l10 = math.log10
   function math.log10(x)
-      if type(x) == 'table' then return l10(math.min(x:to_number(),1e300)) end--x:log10() end
-      return l10(x)
+      if type(x) == 'table' then 
+        if x.log10 then return lenient_bignum(x:log10()) end
+        return lenient_bignum(l10(math.min(x:to_number(),1e300)))
+      end
+      return lenient_bignum(l10(x))
   end
 
   local lg = math.log
   function math.log(x, y)
       if not y then y = 2.718281828459045 end
-      if type(x) == 'table' then return lg(math.min(x:to_number(),1e300),y) end --x:log(y) end
-      return lg(x,y)
+      if type(x) == 'table' then 
+        if x.log then return lenient_bignum(x:log(to_big(y))) end
+        if x.logBase then return lenient_bignum(x:logBase(to_big(y))) end
+        return lenient_bignum(lg(math.min(x:to_number(),1e300),y))
+      end
+      return lenient_bignum(lg(x,y))
   end
+
+  function math.exp(x)
+    local big_e = to_big(2.718281828459045)
+    
+    return lenient_bignum(big_e:pow(x))
+  end 
 
   if SMODS then
     function SMODS.get_blind_amount(ante)
@@ -284,7 +328,11 @@ if Talisman.config_file.break_infinity then
 
   local tsj = G.FUNCS.text_super_juice
   function G.FUNCS.text_super_juice(e, _amount)
-    if _amount > 2 then _amount = 2 end
+    if type(_amount) == 'table' then
+      if _amount > to_big(2) then _amount = 2 end
+    else
+      if _amount > 2 then _amount = 2 end
+    end
     return tsj(e, _amount)
   end
 
@@ -346,7 +394,9 @@ function is_number(x)
 end
 
 function to_big(x, y)
-  if Big and Big.m then
+  if type(x) == 'string' and x == "0" then --hack for when 0 is asked to be a bignumber need to really figure out the fix
+    return 0
+  elseif Big and Big.m then
     return Big:new(x,y)
   elseif Big and Big.array then
     local result = Big:create(x)
@@ -423,8 +473,8 @@ function tal_uht(config, vals)
             G.GAME.current_round.current_hand.hand_level = vals.level
         else
             G.GAME.current_round.current_hand.hand_level = ' '..localize('k_lvl')..tostring(vals.level)
-            if is_number(vals.level) then 
-                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and vals.level or to_big(math.min(vals.level, 7)):to_number()]
+            if is_number(vals.level) then
+                G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[type(vals.level) == "number" and math.floor(math.min(vals.level, 7)) or math.floor(to_big(math.min(vals.level, 7))):to_number()]
             else
                 G.hand_text_area.hand_level.config.colour = G.C.HAND_LEVELS[1]
             end
@@ -482,11 +532,11 @@ if not Talisman.F_NO_COROUTINE then
   --scoring coroutine
   local oldplay = G.FUNCS.evaluate_play
 
-  function G.FUNCS.evaluate_play()
+  function G.FUNCS.evaluate_play(...)
       G.SCORING_COROUTINE = coroutine.create(oldplay)
       G.LAST_SCORING_YIELD = love.timer.getTime()
       G.CARD_CALC_COUNTS = {} -- keys = cards, values = table containing numbers
-      local success, err = coroutine.resume(G.SCORING_COROUTINE)
+      local success, err = coroutine.resume(G.SCORING_COROUTINE, ...)
       if not success then
         error(err)
       end
