@@ -484,7 +484,7 @@ function Big:parse(input)
                 if (intPartLen - 1 >= LONG_STRING_MIN_LENGTH) then
                     b[1] = math.log10(b[1]) + log10LongString(string.sub(a[i], 1, intPartLen - 1))
                     b[2] = 1;
-                elseif ((a[i] ~= nil) and (a[i] ~= "")) then
+                elseif ((a[i] ~= nil) and (a[i] ~= "") and (tonumber(a[i]) ~= nil)) then
                     b[1] = b[1] * tonumber(a[i]);
                 end
             else
