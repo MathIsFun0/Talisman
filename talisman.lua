@@ -181,7 +181,11 @@ function lenient_bignum(x)
   function math.exp(x)
     local big_e = to_big(2.718281828459045)
     
-    return lenient_bignum(big_e:pow(x))
+    if type(big_e) == "number" then
+      return lenient_bignum(big_e ^ x)
+    else
+      return lenient_bignum(big_e:pow(x))
+    end
   end 
 
   if SMODS then
