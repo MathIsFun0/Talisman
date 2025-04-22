@@ -3,7 +3,7 @@ return {
                 Mod = { 
                         Talisman = {
                                 name = "Talisman",
-                                text = {"A mod that increases Balatro's score limit and skips scoring animations. pee pee poo poo"},
+                                text = {"A mod that increases Balatro's score limit and skips scoring animations."},
                         }
                 }
         }, 
