@@ -6,6 +6,34 @@ if not nativefs.getInfo(lovely.mod_dir .. "/Talisman") then
         'Could not find proper Talisman folder.\nPlease make sure the folder for Talisman is named exactly "Talisman" and not "Talisman-main" or anything else.')
 end
 
+-- "Borrowed" from Trance
+function load_file_with_fallback2(a, aa)
+    local success, result = pcall(function() return assert(load(nativefs.read(a)))() end)
+    if success then
+        return result
+    end
+    local fallback_success, fallback_result = pcall(function() return assert(load(nativefs.read(aa)))() end)
+    if fallback_success then
+        return fallback_result
+    end
+end
+
+local talismanloc = init_localization
+function init_localization()
+	local abc = load_file_with_fallback2(
+		lovely.mod_dir .. "/Talisman/localization/" .. (G.SETTINGS.language or "en-us") .. ".lua",
+		lovely.mod_dir .. "/Talisman/localization/en-us.lua"
+	)
+	for k, v in pairs(abc) do
+		if k ~= "descriptions" then
+			G.localization.misc.dictionary[k] = v
+		end
+		-- todo error messages(?)
+		G.localization.misc.dictionary[k] = v
+	end
+	talismanloc()
+end
+
 Talisman = {config_file = {disable_anims = true, break_infinity = "omeganum", score_opt_id = 2}}
 if nativefs.read(lovely.mod_dir.."/Talisman/config.lua") then
     Talisman.config_file = STR_UNPACK(nativefs.read(lovely.mod_dir.."/Talisman/config.lua"))
@@ -22,7 +50,7 @@ if not SMODS or not JSON then
   minw = 5,
   button = "talismanMenu",
   label = {
-  "Talisman"
+  	localize({ type = "name_text", set = "Spectral", key = "c_talisman" })
   },
   colour = G.C.GOLD
   })
@@ -33,16 +61,16 @@ end
 
 Talisman.config_tab = function()
                 tal_nodes = {{n=G.UIT.R, config={align = "cm"}, nodes={
-                  {n=G.UIT.O, config={object = DynaText({string = "Select features to enable:", colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
-                }},create_toggle({label = "Disable Scoring Animations", ref_table = Talisman.config_file, ref_value = "disable_anims",
+                  {n=G.UIT.O, config={object = DynaText({string = localize("talisman_string_A"), colours = {G.C.WHITE}, shadow = true, scale = 0.4})}},
+                }},create_toggle({label = localize("talisman_string_B"), ref_table = Talisman.config_file, ref_value = "disable_anims",
                 callback = function(_set_toggle)
 	                nativefs.write(lovely.mod_dir .. "/Talisman/config.lua", STR_PACK(Talisman.config_file))
                 end}),
                 create_option_cycle({
-                  label = "Score Limit (requires game restart)",
+                  label = localize("talisman_string_C"),
                   scale = 0.8,
                   w = 6,
-                  options = {"Vanilla (e308)", "BigNum (ee308)", "OmegaNum (e10##1000)"},
+                  options = {localize("talisman_vanilla"), localize("talisman_bignum"), localize("talisman_omeganum") .. "(e10##1000)"},
                   opt_callback = 'talisman_upd_score_opt',
                   current_option = Talisman.config_file.score_opt_id,
                 })}
@@ -65,7 +93,7 @@ G.FUNCS.talismanMenu = function(e)
       snap_to_nav = true,
       tabs = {
           {
-              label = "Talisman",
+              label = localize({ type = "name_text", set = "Spectral", key = "c_talisman" }),
               chosen = true,
               tab_definition_function = Talisman.config_tab
           },
@@ -576,7 +604,7 @@ if not Talisman.F_NO_COROUTINE then
           else
               G.SCORING_TEXT = nil
               if not G.OVERLAY_MENU then
-                  G.scoring_text = {"Calculating...", "", "", ""}
+                  G.scoring_text = {localize("talisman_string_D"), "", "", ""}
                   G.SCORING_TEXT = { 
                     {n = G.UIT.C, nodes = {
                       {n = G.UIT.R, config = {padding = 0.1, align = "cm"}, nodes = {
@@ -591,7 +619,7 @@ if not Talisman.F_NO_COROUTINE then
                       UIBox_button({
                         colour = G.C.BLUE,
                         button = "tal_abort",
-                        label = { "Abort" },
+                        label = { localize("talisman_string_E") },
                         minw = 4.5,
                         focus_args = { snap_to = true },
                       })}},
@@ -610,10 +638,10 @@ if not Talisman.F_NO_COROUTINE then
                     end
                     local jokersYetToScore = #G.jokers.cards + #G.play.cards - #G.CARD_CALC_COUNTS
                     G.CURRENT_CALC_TIME = (G.CURRENT_CALC_TIME or 0) + dt
-                    G.scoring_text[1] = "Calculating..."
-                    G.scoring_text[2] = "Elapsed calculations: "..tostring(totalCalcs).." ("..tostring(number_format(G.CURRENT_CALC_TIME)).."s)"
-                    G.scoring_text[3] = "Cards yet to score: "..tostring(jokersYetToScore)
-                    G.scoring_text[4] = "Calculations last played hand: " .. tostring(G.GAME.LAST_CALCS or "Unknown") .." ("..tostring(G.GAME.LAST_CALC_TIME and number_format(G.GAME.LAST_CALC_TIME) or "???").."s)"
+                    G.scoring_text[1] = localize("talisman_string_D")
+                    G.scoring_text[2] = localize("talisman_string_F")..tostring(totalCalcs).." ("..tostring(number_format(G.CURRENT_CALC_TIME)).."s)"
+                    G.scoring_text[3] = localize("talisman_string_G")..tostring(jokersYetToScore)
+                    G.scoring_text[4] = localize("talisman_string_H") .. tostring(G.GAME.LAST_CALCS or localize("talisman_string_I")) .." ("..tostring(G.GAME.LAST_CALC_TIME and number_format(G.GAME.LAST_CALC_TIME) or "???").."s)"
                   end
 
               end
