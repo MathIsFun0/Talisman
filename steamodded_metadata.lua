@@ -57,6 +57,9 @@ if SMODS.current_mod then
   SMODS.current_mod.debug_info = {
     ["Break Infinity"] = Talisman.config_file.break_infinity
   }
+  SMODS.current_mod.description_loc_vars = function()
+    return { background_colour = G.C.CLEAR, text_colour = G.C.WHITE, scale = 1.2 }
+  end
 end
 --[[SMODS.Joker{
   key = "test",
