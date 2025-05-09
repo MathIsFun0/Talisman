@@ -6,7 +6,7 @@ Big = {
 
 maxArrow = 1e3
 
-OmegaMeta = {}
+OmegaMeta = { __type = "OmegaNumber" }
 OmegaMeta.__index = Big
 
 external = true
@@ -73,8 +73,26 @@ end
 
 ------------------------------------------------------
 
-function Big:new(arr)
-	return setmetatable({ array = arr, sign = 1 }, OmegaMeta):normalize()
+function Big:new(input)
+	if type(input) == "number" then
+		return setmetatable({ array = { input }, sign = 1 }, OmegaMeta):normalize()
+	elseif type(input) == "string" then
+		return Big:parse(input)
+	elseif (type(input) == "table") and getmetatable(input) == OmegaMeta then
+		return input:clone()
+	elseif type(input) == "table" then
+		-- Handle array inputs directly (backward compatibility with original implementation)
+		return setmetatable({ array = input, sign = 1 }, OmegaMeta):normalize()
+	else
+		-- Default case for nil or other types
+		return setmetatable({ array = { 0 }, sign = 1 }, OmegaMeta):normalize()
+	end
+end
+
+-- Alias of new for backward compatibility
+-- The main creation method is now Big:new, which handles all input types
+function Big:create(input)
+	return Big:new(input)
 end
 
 function Big:is_nan()
@@ -216,7 +234,7 @@ function Big:normalize()
 	end
 	for i = 1, l do
 		local e = x.array[i]
-		if (e == nil) then
+		if e == nil then
 			x.array[i] = 0
 			e = 0
 		end
@@ -580,18 +598,6 @@ function Big:clone()
 	local result = Big:new(newArr)
 	result.sign = self.sign
 	return result
-end
-
-function Big:create(input)
-	if (type(input) == "number") then
-		return Big:new({ input })
-	elseif (type(input) == "string") then
-		return Big:parse(input)
-	elseif (type(input) == "table") and getmetatable(input) == OmegaMeta then
-		return input:clone()
-	else
-		return Big:new(input)
-	end
 end
 
 function Big:ensure_big(input)
