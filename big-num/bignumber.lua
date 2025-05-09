@@ -5,7 +5,7 @@ Big = {
 }
 
 -- metatable
-BigMeta = {}
+BigMeta = { __type = "BigNumber" }
 BigMeta.__index = Big
 
 --- Create a new Big number
