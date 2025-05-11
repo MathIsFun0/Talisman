@@ -51,7 +51,7 @@ function thousands_format(number)
 	return string.format("%.2f", number)
 end
 
-function AThousandNotation(n, places)
+function a_thousand_notation(n, places)
 	local raw = string.format("%." .. places .. "f", n)
 	local result = ""
 	local comma = string.find(raw, "%.")
@@ -89,27 +89,21 @@ function Big:new(input)
 	end
 end
 
--- Alias of new for backward compatibility
--- The main creation method is now Big:new, which handles all input types
-function Big:create(input)
-	return Big:new(input)
-end
-
-function Big:isNaN()
+function Big:is_nan()
 	return self.array[1] ~= self.array[1]
 end
 
-function Big:isInfinite()
+function Big:is_infinite()
 	return (self.array[1] == R.POSITIVE_INFINITY) or (self.array[1] == R.NEGATIVE_INFINITY)
 end
 
-function Big:isFinite()
-	return (not self:isInfinite() and not self:isNaN())
+function Big:is_finite()
+	return (not self:is_infinite() and not self:is_nan())
 end
 
-function Big:isint()
+function Big:is_int()
 	if self.sign == -1 then
-		return self:abs():isint()
+		return self:abs():is_int()
 	end
 	if self:gt(B.MAX_SAFE_INTEGER) then
 		return true
@@ -297,7 +291,7 @@ function Big:normalize()
 	return x
 end
 
-function Big:toString()
+function Big:to_string()
 	if self.sign == -1 then
 		return "-" .. self:abs():toString()
 	end
@@ -343,7 +337,7 @@ function Big:toString()
 	return s
 end
 
-function log10LongString(str)
+function log10_long_string(str)
 	return math.log(tonumber(string.sub(str, 1, LONG_STRING_MIN_LENGTH)), 10)
 		+ (string.len(str) - LONG_STRING_MIN_LENGTH)
 end
@@ -600,7 +594,7 @@ function Big:clone()
 	return result
 end
 
-function Big:ensureBig(input)
+function Big:ensure_big(input)
 	if (type(input) == "table") and getmetatable(input) == OmegaMeta then
 		return input
 	else
@@ -1371,6 +1365,47 @@ end
 
 for i, v in pairs(R) do
 	B[i] = Big:ensureBig(v)
+end
+
+-- Compat layer
+-- These functions are kept for backwards compatibility for now
+-- but will be deprecated soon
+
+-- The main creation method is now Big:new, which handles all input types
+function AThousandNotation(n, places)
+	return a_thousand_notation(n, places)
+end
+
+function Big:create(input)
+	return Big:new(input)
+end
+
+function Big:isNaN()
+	return self:is_nan()
+end
+
+function Big:isInfinite()
+	return self:is_infinite()
+end
+
+function Big:isFinite()
+	return self:is_finite()
+end
+
+function Big:ensureBig(input)
+	return Big:ensure_big(input)
+end
+
+function Big:isint()
+	return self:is_int()
+end
+
+function Big:toString()
+	return Big:to_string()
+end
+
+function log10LongString(str)
+	return log10_long_string(str)
 end
 
 return Big
