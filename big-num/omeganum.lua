@@ -1102,7 +1102,7 @@ function Big:max_for_op(arrows)
     if type(arrows) == "table" then
         arrows = arrows:to_number()
     end
-    if arrows < 1 then
+    if arrows < 1 or arrows ~= arrows or arrows == R.POSITIVE_INFINITY then
         return B.NaN:clone()
     end
     if arrows == 1 then
