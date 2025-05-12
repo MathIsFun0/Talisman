@@ -772,7 +772,7 @@ function Big:rec()
 	return Big:new(B.ONE):div(self)
 end
 
-function Big:logBase(base)
+function Big:log_base(base)
 	if base == nil then
 		base = Big:new(B.E)
 	end
@@ -957,7 +957,7 @@ function Big:slog(base)
 			return Big:new(r + x:to_number() - 1)
 		else
 			r = r + 1
-			x = x:logBase(base)
+			x = x:log_base(base)
 		end
 	end
 	if x:gt(10) then
@@ -1044,7 +1044,7 @@ function Big:tetrate(other)
 			l = r
 			f = f - 1
 		else
-			r = r:logBase(t)
+			r = r:log_base(t)
 			if l:eq(r) then
 				f = 0
 				break
@@ -1356,6 +1356,10 @@ end
 
 function log10LongString(str)
 	return log10_long_string(str)
+end
+
+function Big:logBase(base)
+	return Big:log_base(base)
 end
 
 return Big
