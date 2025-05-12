@@ -112,7 +112,7 @@ function Big:is_int()
 	return (math.floor(num) == num)
 end
 
-function Big:compareTo(other)
+function Big:compare_to(other)
 	other = Big:ensure_big(other)
 	if (self.array[1] ~= self.array[1]) or (other.array[1] ~= other.array[1]) then
 		return R.NaN
@@ -151,23 +151,23 @@ function Big:compareTo(other)
 end
 
 function Big:lt(other)
-	return self:compareTo(other) < 0
+	return self:compare_to(other) < 0
 end
 
 function Big:gt(other)
-	return self:compareTo(other) > 0
+	return self:compare_to(other) > 0
 end
 
 function Big:lte(other)
-	return self:compareTo(other) <= 0
+	return self:compare_to(other) <= 0
 end
 
 function Big:gte(other)
-	return self:compareTo(other) >= 0
+	return self:compare_to(other) >= 0
 end
 
 function Big:eq(other)
-	return self:compareTo(other) == 0
+	return self:compare_to(other) == 0
 end
 
 function Big:neg()
@@ -1360,6 +1360,10 @@ end
 
 function Big:logBase(base)
 	return Big:log_base(base)
+end
+
+function Big:compareTo(other)
+	return Big:compare_to(other)
 end
 
 return Big
