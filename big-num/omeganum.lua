@@ -114,7 +114,7 @@ function Big:compareTo(other)
         return 0
     end
     if (self.sign~=other.sign) then
-        return self.sign    
+        return self.sign
     end
     local m = self.sign;
     local r = nil;
@@ -272,18 +272,18 @@ function Big:normalize()
             end
         end
     end
-    if (#x.array == 0) then 
+    if (#x.array == 0) then
         x.array = {0}
     end
     return x;
 end
 
 function Big:toString()
-    if (self.sign==-1) then 
+    if (self.sign==-1) then
         return "-" .. self:abs():toString()
     end
     if (self.array[1] ~= self.array[1]) then
-        return "NaN" 
+        return "NaN"
     end
     -- if (!isFinite(this.array[0])) return "Infinity";
     local s = "";
@@ -314,17 +314,17 @@ function Big:toString()
         s = s .. string.rep("e", self.array[2]-1) .. AThousandNotation(math.pow(10,self.array[1]-math.floor(self.array[1])), 2) .. "e" .. AThousandNotation(math.floor(self.array[1]), 0);
     elseif (self.array[2]<8) then
         s = s .. string.rep("e", self.array[2]) .. AThousandNotation(self.array[1], 0)
-    else 
+    else
         s = s .. "(10^)^" .. AThousandNotation(self.array[2], 0) .. " " .. AThousandNotation(self.array[1],0)
     end
     return s
 end
 
-function log10LongString(str) 
+function log10LongString(str)
     return math.log(tonumber(string.sub(str, 1, LONG_STRING_MIN_LENGTH)), 10)+(string.len(str)- LONG_STRING_MIN_LENGTH);
 end
 
-function Big:parse(input)   
+function Big:parse(input)
     -- if (typeof input!="string") throw Error(invalidArgument+"Expected String");
     -- var isJSON=false;
     -- if (typeof input=="string"&&(input[0]=="["||input[0]=="{")){
@@ -470,7 +470,7 @@ function Big:parse(input)
             local decimalPointPos = 1;
             while ((string.sub(a[i], decimalPointPos, decimalPointPos) ~= ".") and (decimalPointPos <= #a[i])) do
                 decimalPointPos = decimalPointPos + 1
-            end 
+            end
             if decimalPointPos == #a[i] + 1 then
                 decimalPointPos = -1
             end
@@ -701,7 +701,7 @@ function Big:sub(other)
         else
             a = math.log(p.array[1], 10)
         end
-        
+
         t = Big:new({a+math.log(math.pow(10,q.array[1]-a)-1, 10),1});
         if n then
             t = t:neg()
@@ -1098,6 +1098,32 @@ function Big:tetrate(other)
     return r;
 end
 
+function Big:max_for_op(arrows)
+    if type(arrows) == "table" then
+        arrows = arrows:to_number()
+    end
+    if arrows < 1 then
+        return B.NaN:clone()
+    end
+    if arrows == 1 then
+        return B.E_MAX_SAFE_INTEGER:clone()
+    end
+    if arrows == 2 then
+        return B.TETRATED_MAX_SAFE_INTEGER:clone()
+    end
+
+    local arr = {}
+    arr[1] = 10e9
+    arr[arrows] = R.MAX_SAFE_INTEGER - 2
+    for i = 2, arrows - 1 do
+        arr[i] = 8
+    end
+
+    local res = Big:new({0})
+    res.array = arr
+    return res
+end
+
 function Big:arrow(arrows, other)
     local t = self
     arrows = Big:ensureBig(arrows)
@@ -1130,16 +1156,19 @@ function Big:arrow(arrows, other)
     if (other:eq(2)) then
         return t:arrow(arrows:sub(B.ONE), t)
     end
-    if (t:max(other):gt("10{"..tostring(arrowsNum+1).."}"..tostring(R.MAX_SAFE_INTEGER))) then
+    local limit_plus = Big:max_for_op(arrowsNum+1)
+    local limit = Big:max_for_op(arrowsNum)
+    local limit_minus = Big:max_for_op(arrowsNum-1)
+    if (t:max(other):gt(limit_plus)) then
         return t:max(other)
     end
     local r = nil
-    if (t:gt("10{"..tostring(arrowsNum).."}"..tostring(R.MAX_SAFE_INTEGER)) or other:gt(B.MAX_SAFE_INTEGER)) then
-        if (t:gt("10{"..tostring(arrowsNum).."}"..tostring(R.MAX_SAFE_INTEGER))) then
+    if (t:gt(limit) or other:gt(B.MAX_SAFE_INTEGER)) then
+        if (t:gt(limit)) then
             r = t:clone()
             r.array[arrowsNum + 1] = r.array[arrowsNum + 1] - 1
             r:normalize()
-        elseif (t:gt("10{"..tostring(arrowsNum - 1).."}"..tostring(R.MAX_SAFE_INTEGER))) then
+        elseif (t:gt(limit_minus)) then
             r = Big:create(t.array[arrowsNum])
         else
             r = Big:create(B.ZERO)
@@ -1153,7 +1182,7 @@ function Big:arrow(arrows, other)
     local f = math.floor(y)
     local arrows_m1 = arrows:sub(B.ONE)
     local i = 0
-    local m = Big:create("10{"..tostring(arrowsNum - 1).."}"..tostring(R.MAX_SAFE_INTEGER))
+    local m = limit_minus
     r = t:arrow(arrows_m1, y-f)
     while (f ~= 0) and r:lt(m) and (i<100) do
         if (f > 0) then
@@ -1274,29 +1303,29 @@ end
 ------------------------metastuff----------------------------
 
 function OmegaMeta.__add(b1, b2)
-    if type(b1) == "number" then 
+    if type(b1) == "number" then
         return Big:create(b1):add(b2)
     end
     return b1:add(b2)
 end
 
 function OmegaMeta.__sub(b1, b2)
-    if type(b1) == "number" then 
-        return Big:create(b1):sub(b2) 
+    if type(b1) == "number" then
+        return Big:create(b1):sub(b2)
     end
     return b1:sub(b2)
 end
 
 function OmegaMeta.__mul(b1, b2)
-    if type(b1) == "number" then 
-        return Big:create(b1):mul(b2) 
+    if type(b1) == "number" then
+        return Big:create(b1):mul(b2)
     end
     return b1:mul(b2)
 end
 
 function OmegaMeta.__div(b1, b2)
-    if type(b1) == "number" then 
-        return Big:create(b1):div(b2) 
+    if type(b1) == "number" then
+        return Big:create(b1):div(b2)
     end
     return b1:div(b2)
 end
@@ -1312,7 +1341,7 @@ function OmegaMeta.__unm(b)
 end
 
 function OmegaMeta.__pow(b1, b2)
-    if type(b1) == "number" then 
+    if type(b1) == "number" then
         return Big:ensureBig(b1):pow(b2)
     end
     return b1:pow(b2)
