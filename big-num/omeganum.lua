@@ -51,7 +51,7 @@ function thousands_format(number)
 	return string.format("%.2f", number)
 end
 
-function thousand_notation(n, places)
+function AThousandNotation(n, places)
 	local raw = string.format("%." .. places .. "f", n)
 	local result = ""
 	local comma = string.find(raw, "%.")
@@ -95,21 +95,21 @@ function Big:create(input)
 	return Big:new(input)
 end
 
-function Big:is_nan()
+function Big:isNaN()
 	return self.array[1] ~= self.array[1]
 end
 
-function Big:is_infinite()
+function Big:isInfinite()
 	return (self.array[1] == R.POSITIVE_INFINITY) or (self.array[1] == R.NEGATIVE_INFINITY)
 end
 
-function Big:is_finite()
-	return (not self:is_infinite() and not self:is_nan())
+function Big:isFinite()
+	return (not self:isInfinite() and not self:isNaN())
 end
 
-function Big:is_int()
+function Big:isint()
 	if self.sign == -1 then
-		return self:abs():is_int()
+		return self:abs():isint()
 	end
 	if self:gt(B.MAX_SAFE_INTEGER) then
 		return true
@@ -118,8 +118,8 @@ function Big:is_int()
 	return (math.floor(num) == num)
 end
 
-function Big:compare_to(other)
-	other = Big:ensure_big(other)
+function Big:compareTo(other)
+	other = Big:ensureBig(other)
 	if (self.array[1] ~= self.array[1]) or (other.array[1] ~= other.array[1]) then
 		return R.NaN
 	end
@@ -157,23 +157,23 @@ function Big:compare_to(other)
 end
 
 function Big:lt(other)
-	return self:compare_to(other) < 0
+	return self:compareTo(other) < 0
 end
 
 function Big:gt(other)
-	return self:compare_to(other) > 0
+	return self:compareTo(other) > 0
 end
 
 function Big:lte(other)
-	return self:compare_to(other) <= 0
+	return self:compareTo(other) <= 0
 end
 
 function Big:gte(other)
-	return self:compare_to(other) >= 0
+	return self:compareTo(other) >= 0
 end
 
 function Big:eq(other)
-	return self:compare_to(other) == 0
+	return self:compareTo(other) == 0
 end
 
 function Big:neg()
@@ -297,9 +297,9 @@ function Big:normalize()
 	return x
 end
 
-function Big:to_string()
+function Big:toString()
 	if self.sign == -1 then
-		return "-" .. self:abs():to_string()
+		return "-" .. self:abs():toString()
 	end
 	if self.array[1] ~= self.array[1] then
 		return "NaN"
@@ -315,7 +315,7 @@ function Big:to_string()
 				q = string.rep("^", i - 1)
 			end
 			if self.array[i] > 1 then
-				s = s .. "(10" .. q .. ")^" .. thousand_notation(self.array[i], 0) .. " "
+				s = s .. "(10" .. q .. ")^" .. AThousandNotation(self.array[i], 0) .. " "
 			elseif self.array[i] == 1 then
 				s = s .. "10" .. q
 			end
@@ -323,27 +323,27 @@ function Big:to_string()
 	end
 	if (self.array[2] == nil) or (self.array[2] == 0) then
 		if self.array[1] <= 9e9 then
-			s = s .. thousand_notation(self.array[1], 2)
+			s = s .. AThousandNotation(self.array[1], 2)
 		else
 			local exponent = math.floor(math.log(self.array[1], 10))
 			local mantissa = math.floor((self.array[1] / (10 ^ exponent)) * 100) / 100
-			s = s .. thousand_notation(mantissa, 2) .. "e" .. thousand_notation(exponent, 0)
+			s = s .. AThousandNotation(mantissa, 2) .. "e" .. AThousandNotation(exponent, 0)
 		end
 	elseif self.array[2] < 3 then
 		s = s
 			.. string.rep("e", self.array[2] - 1)
-			.. thousand_notation(math.pow(10, self.array[1] - math.floor(self.array[1])), 2)
+			.. AThousandNotation(math.pow(10, self.array[1] - math.floor(self.array[1])), 2)
 			.. "e"
-			.. thousand_notation(math.floor(self.array[1]), 0)
+			.. AThousandNotation(math.floor(self.array[1]), 0)
 	elseif self.array[2] < 8 then
-		s = s .. string.rep("e", self.array[2]) .. thousand_notation(self.array[1], 0)
+		s = s .. string.rep("e", self.array[2]) .. AThousandNotation(self.array[1], 0)
 	else
-		s = s .. "(10^)^" .. thousand_notation(self.array[2], 0) .. " " .. thousand_notation(self.array[1], 0)
+		s = s .. "(10^)^" .. AThousandNotation(self.array[2], 0) .. " " .. AThousandNotation(self.array[1], 0)
 	end
 	return s
 end
 
-function log10_long_string(str)
+function log10LongString(str)
 	return math.log(tonumber(string.sub(str, 1, LONG_STRING_MIN_LENGTH)), 10)
 		+ (string.len(str) - LONG_STRING_MIN_LENGTH)
 end
@@ -509,7 +509,7 @@ function Big:parse(input)
 			end
 			if b[2] == 0 then
 				if intPartLen - 1 >= LONG_STRING_MIN_LENGTH then
-					b[1] = math.log10(b[1]) + log10_long_string(string.sub(a[i], 1, intPartLen - 1))
+					b[1] = math.log10(b[1]) + log10LongString(string.sub(a[i], 1, intPartLen - 1))
 					b[2] = 1
 				elseif (a[i] ~= nil) and (a[i] ~= "") and (tonumber(a[i]) ~= nil) then
 					b[1] = b[1] * tonumber(a[i])
@@ -517,7 +517,7 @@ function Big:parse(input)
 			else
 				d = -1
 				if intPartLen - 1 >= LONG_STRING_MIN_LENGTH then
-					d = log10_long_string(string.sub(a[i], 1, intPartLen - 1))
+					d = log10LongString(string.sub(a[i], 1, intPartLen - 1))
 				else
 					if (a[i] ~= nil) and (a[i] ~= "") and (tonumber(a[i]) ~= nil) then
 						d = math.log(tonumber(a[i]), 10)
@@ -577,14 +577,14 @@ function Big:to_number()
 end
 
 function Big:floor()
-	if self:is_int() then
+	if self:isint() then
 		return self:clone()
 	end
 	return Big:create(math.floor(self:to_number()))
 end
 
 function Big:ceil()
-	if self:is_int() then
+	if self:isint() then
 		return self:clone()
 	end
 	return Big:create(math.ceil(self:to_number()))
@@ -600,7 +600,7 @@ function Big:clone()
 	return result
 end
 
-function Big:ensure_big(input)
+function Big:ensureBig(input)
 	if (type(input) == "table") and getmetatable(input) == OmegaMeta then
 		return input
 	else
@@ -610,7 +610,7 @@ end
 
 function Big:add(other)
 	local x = self
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	-- if (OmegaNum.debug>=OmegaNum.NORMAL){
 	--   console.log(this+"+"+other);
 	--   if (!debugMessageSent) console.warn(omegaNumError+"Debug output via 'debug' is being deprecated and will be removed in the future!"),debugMessageSent=true;
@@ -627,13 +627,13 @@ function Big:add(other)
 	if other:eq(B.ZERO) then
 		return x:clone()
 	end
-	if x:is_nan() or other:is_nan() or (x:is_infinite() and other:is_infinite() and x:eq(other:neg())) then
+	if x:isNaN() or other:isNaN() or (x:isInfinite() and other:isInfinite() and x:eq(other:neg())) then
 		return Big:create(B.NaN)
 	end
-	if x:is_infinite() then
+	if x:isInfinite() then
 		return x:clone()
 	end
-	if other:is_infinite() then
+	if other:isInfinite() then
 		return other:clone()
 	end
 	local p = x:min(other)
@@ -666,7 +666,7 @@ end
 
 function Big:sub(other)
 	local x = self
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(x+"-"+other);
 	if x.sign == -1 then
 		return x:neg():sub(other:neg()):neg()
@@ -680,13 +680,13 @@ function Big:sub(other)
 	if other:eq(B.ZERO) then
 		return x:clone()
 	end
-	if x:is_nan() or other:is_nan() or (x:is_infinite() and other:is_infinite() and x:eq(other:neg())) then
+	if x:isNaN() or other:isNaN() or (x:isInfinite() and other:isInfinite() and x:eq(other:neg())) then
 		return Big:create(B.NaN)
 	end
-	if x:is_infinite() then
+	if x:isInfinite() then
 		return x:clone()
 	end
-	if other:is_infinite() then
+	if other:isInfinite() then
 		return other:neg()
 	end
 	local p = x:min(other)
@@ -731,14 +731,14 @@ end
 
 function Big:div(other)
 	local x = self
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	if x.sign * other.sign == -1 then
 		return x:abs():div(other:abs()):neg()
 	end
 	if x.sign == -1 then
 		return x:abs():div(other:abs())
 	end
-	if x:is_nan() or other:is_nan() or (x:is_infinite() and other:is_infinite() and x:eq(other:neg())) then
+	if x:isNaN() or other:isNaN() or (x:isInfinite() and other:isInfinite() and x:eq(other:neg())) then
 		return Big:create(B.NaN)
 	end
 	if other:eq(B.ZERO) then
@@ -750,10 +750,10 @@ function Big:div(other)
 	if x:eq(other) then
 		return Big:create(B.ONE)
 	end
-	if x:is_infinite() then
+	if x:isInfinite() then
 		return x:clone()
 	end
-	if other:is_infinite() then
+	if other:isInfinite() then
 		return Big:create(B.ZERO)
 	end
 	if x:max(other):gt(B.EE_MAX_SAFE_INTEGER) then
@@ -777,7 +777,7 @@ end
 
 function Big:mul(other)
 	local x = self
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(x+"*"+other);
 	if x.sign * other.sign == -1 then
 		return x:abs():mul(other:abs()):neg()
@@ -785,7 +785,7 @@ function Big:mul(other)
 	if x.sign == -1 then
 		return x:abs():mul(other:abs())
 	end
-	if x:is_nan() or other:is_nan() or (x:is_infinite() and other:is_infinite() and x:eq(other:neg())) then
+	if x:isNaN() or other:isNaN() or (x:isInfinite() and other:isInfinite() and x:eq(other:neg())) then
 		return Big:create(B.NaN)
 	end
 	if other:eq(B.ZERO) then
@@ -794,10 +794,10 @@ function Big:mul(other)
 	if other:eq(B.ONE) then
 		return x:clone()
 	end
-	if x:is_infinite() then
+	if x:isInfinite() then
 		return x:clone()
 	end
-	if other:is_infinite() then
+	if other:isInfinite() then
 		return other:clone()
 	end
 	if x:max(other):gt(B.EE_MAX_SAFE_INTEGER) then
@@ -811,7 +811,7 @@ function Big:mul(other)
 end
 
 function Big:rec()
-	if self:is_nan() or self:eq(B.ZERO) then
+	if self:isNaN() or self:eq(B.ZERO) then
 		return Big:create(B.NaN)
 	end
 	if self:abs():gt("2e323") then
@@ -839,7 +839,7 @@ function Big:log10()
 	if x:lte(B.MAX_SAFE_INTEGER) then
 		return Big:create(math.log(x:to_number(), 10))
 	end
-	if not x:is_finite() then
+	if not x:isFinite() then
 		return x:clone()
 	end
 	if x:gt(B.TETRATED_MAX_SAFE_INTEGER) then
@@ -856,7 +856,7 @@ function Big:ln()
 end
 
 function Big:pow(other)
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(this+"^"+other);
 	if other:eq(B.ZERO) then
 		return Big:create(B.ONE)
@@ -867,7 +867,7 @@ function Big:pow(other)
 	if other:lt(B.ZERO) then
 		return self:pow(other:neg()):rec()
 	end
-	if self:lt(B.ZERO) and other:is_int() then
+	if self:lt(B.ZERO) and other:isint() then
 		if other:mod(2):lt(B.ONE) then
 			return self:abs():pow(other)
 		end
@@ -912,7 +912,7 @@ function Big:exp()
 end
 
 function Big:root(other)
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(this+"root"+other);
 	if other:eq(B.ONE) then
 		return self:clone()
@@ -923,7 +923,7 @@ function Big:root(other)
 	if other:lt(B.ONE) then
 		return self:pow(other:rec())
 	end
-	if self:lt(B.ZERO) and other:is_int() and other:mod(2):eq(B.ONE) then
+	if self:lt(B.ZERO) and other:isint() and other:mod(2):eq(B.ONE) then
 		return self:neg():root(other):neg()
 	end
 	if self:lt(B.ZERO) then
@@ -950,14 +950,14 @@ function Big:slog(base)
 		base = 10
 	end
 	local x = self
-	base = Big:ensure_big(base)
-	if x:is_nan() or base:is_nan() or (x:is_infinite() and base:is_infinite()) then
+	base = Big:ensureBig(base)
+	if x:isNaN() or base:isNaN() or (x:isInfinite() and base:isInfinite()) then
 		return Big:create(B.NaN)
 	end
-	if x:is_infinite() then
+	if x:isInfinite() then
 		return x:clone()
 	end
-	if base:is_infinite() then
+	if base:isInfinite() then
 		return Big:create(B.ZERO)
 	end
 	if x:lt(B.ZERO) then
@@ -1019,12 +1019,12 @@ end
 
 function Big:tetrate(other)
 	local t = self
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	local negln = nil
-	if t:is_nan() or other:is_nan() then
+	if t:isNaN() or other:isNaN() then
 		return Big:create(B.NaN)
 	end
-	if other:is_infinite() and other.sign > 0 then
+	if other:isInfinite() and other.sign > 0 then
 		negln = t:ln():neg()
 		return negln:lambertw():div(negln)
 	end
@@ -1115,8 +1115,8 @@ end
 
 function Big:arrow(arrows, other)
 	local t = self
-	arrows = Big:ensure_big(arrows)
-	if not arrows:is_int() or arrows:lt(B.ZERO) then
+	arrows = Big:ensureBig(arrows)
+	if not arrows:isint() or arrows:lt(B.ZERO) then
 		return Big:create(B.NaN)
 	end
 	if arrows:eq(B.ZERO) then
@@ -1186,7 +1186,7 @@ function Big:arrow(arrows, other)
 end
 
 function Big:mod(other)
-	other = Big:ensure_big(other)
+	other = Big:ensureBig(other)
 	if other:eq(B.ZERO) then
 		Big:create(B.ZERO)
 	end
@@ -1201,7 +1201,7 @@ end
 
 function Big:lambertw()
 	local x = self
-	if x:is_nan() then
+	if x:isNaN() then
 		return x:clone()
 	end
 	if x:lt(-0.3678794411710499) then
@@ -1228,7 +1228,7 @@ function Big:f_lambertw(z)
 	local w = nil
 	local wn = nil
 	local OMEGA = 0.56714329040978387299997
-	if not Big:ensure_big(z):is_finite() then
+	if not Big:ensureBig(z):isFinite() then
 		return z
 	end
 	if z == 0 then
@@ -1256,13 +1256,13 @@ end
 
 function Big:d_lambertw(z)
 	local tol = 1e-10
-	z = Big:ensure_big(z)
+	z = Big:ensureBig(z)
 	local w = nil
 	local ew = nil
 	local wewz = nil
 	local wn = nil
 	local OMEGA = 0.56714329040978387299997
-	if not z:is_finite() then
+	if not z:isFinite() then
 		return z:clone()
 	end
 	if z == 0 then
@@ -1328,33 +1328,33 @@ end
 
 function OmegaMeta.__pow(b1, b2)
 	if type(b1) == "number" then
-		return Big:ensure_big(b1):pow(b2)
+		return Big:ensureBig(b1):pow(b2)
 	end
 	return b1:pow(b2)
 end
 
 function OmegaMeta.__le(b1, b2)
-	b1 = Big:ensure_big(b1)
+	b1 = Big:ensureBig(b1)
 	return b1:lte(b2)
 end
 
 function OmegaMeta.__lt(b1, b2)
-	b1 = Big:ensure_big(b1)
+	b1 = Big:ensureBig(b1)
 	return b1:lt(b2)
 end
 
 function OmegaMeta.__ge(b1, b2)
-	b1 = Big:ensure_big(b1)
+	b1 = Big:ensureBig(b1)
 	return b1:gte(b2)
 end
 
 function OmegaMeta.__gt(b1, b2)
-	b1 = Big:ensure_big(b1)
+	b1 = Big:ensureBig(b1)
 	return b1:gt(b2)
 end
 
 function OmegaMeta.__eq(b1, b2)
-	b1 = Big:ensure_big(b1)
+	b1 = Big:ensureBig(b1)
 	return b1:eq(b2)
 end
 
@@ -1363,14 +1363,14 @@ function OmegaMeta.__tostring(b)
 end
 
 function OmegaMeta.__concat(a, b)
-	a = Big:ensure_big(a)
+	a = Big:ensureBig(a)
 	return tostring(a) .. tostring(b)
 end
 
 ---------------------------------------
 
 for i, v in pairs(R) do
-	B[i] = Big:ensure_big(v)
+	B[i] = Big:ensureBig(v)
 end
 
 return Big
