@@ -100,7 +100,10 @@ end
 
 -- Formats for hash notation (e12#34#56#78)
 function BalaNotation:formatHashNotation(n, places)
-	local r = "e" .. self:e_ify(math.floor(n.array[1] * 10 ^ places + 0.5) / 10 ^ places) .. "#" .. e_ify(n.array[2])
+	local r = "e"
+		.. self:e_ify(math.floor(n.array[1] * 10 ^ places + 0.5) / 10 ^ places)
+		.. "#"
+		.. self:e_ify(n.array[2])
 	for i = 3, #n.array do
 		r = r .. "#" .. self:e_ify(n.array[i] + 1)
 	end
