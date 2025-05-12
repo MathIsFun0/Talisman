@@ -213,7 +213,6 @@ function Big:normalize()
 		x.array[1] = -x.array[1]
 	end
 	if (x.sign ~= 1) and (x.sign ~= -1) then
-		--   if (typeof x.sign!="number") x.sign=Number(x.sign);
 		if x.sign < 0 then
 			x.sign = -1
 		else
@@ -246,7 +245,6 @@ function Big:normalize()
 	end
 	local doOnce = true
 	while doOnce or b do
-		--   if (OmegaNum.debug>=OmegaNum.ALL) console.log(x.toString());
 		b = false
 		while (#x.array ~= 0) and (x.array[#x.array] == 0) do
 			x.array[#x.array] = nil
@@ -262,16 +260,6 @@ function Big:normalize()
 			x.array[2] = x.array[2] - 1
 			b = true
 		end
-		-- if ((#x.array>2) and ((x.array[2] == nil) or (x.array[2] == 0))) then
-		--     local i = 3
-		--     while (x.array[i] == nil) or (x.array[i] == 0) do
-		--         i = i + 1
-		--     end
-		--     x.array[i-1]=x.array[1];
-		--     x.array[1]=1;
-		--     x.array[i] = x.array[i] - 1
-		--     b=true;
-		-- end
 		doOnce = false
 		l = #x.array
 		for i = 1, l do
@@ -342,24 +330,7 @@ function log10_long_string(str)
 end
 
 function Big:parse(input)
-	-- if (typeof input!="string") throw Error(invalidArgument+"Expected String");
-	-- var isJSON=false;
-	-- if (typeof input=="string"&&(input[0]=="["||input[0]=="{")){
-	--   try {
-	--     JSON.parse(input);
-	--   }finally{
-	--     isJSON=true;
-	--   }
-	-- }
-	-- if (isJSON){
-	--   return OmegaNum.fromJSON(input);
-	-- }
 	local x = Big:new({ 0 })
-	-- if (!isOmegaNum.test(input)){
-	--   console.warn(omegaNumError+"Malformed input: "+input);
-	--   x.array=[NaN];
-	--   return x;
-	-- }
 	local negateIt = false
 	while (string.sub(input, 1, 1) == "-") or (string.sub(input, 1, 1) == "+") do
 		if string.sub(input, 1, 1) == "-" then
@@ -412,11 +383,6 @@ function Big:parse(input)
 					arrows = tonumber(string.sub(input, 4, a - 1)) + 1
 					b = a + 1
 				end
-				--[[if (arrows >= maxArrow) then
-                -- console.warn("Number too large to reasonably handle it: tried to "+arrows.add(2)+"-ate.");
-                    x.array = {R.POSITIVE_INFINITY};
-                    break;
-                end--]]
 				input = string.sub(input, b + 1)
 				if string.sub(input, 1, 1) == ")" then
 					a = 1
@@ -543,7 +509,6 @@ function Big:parse(input)
 end
 
 function Big:to_number()
-	-- //console.log(this.array);
 	if self.sign == -1 then
 		return -1 * (self:neg():to_number())
 	end
@@ -604,10 +569,6 @@ end
 function Big:add(other)
 	local x = self
 	other = Big:ensure_big(other)
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL){
-	--   console.log(this+"+"+other);
-	--   if (!debugMessageSent) console.warn(omegaNumError+"Debug output via 'debug' is being deprecated and will be removed in the future!"),debugMessageSent=true;
-	-- }
 	if x.sign == -1 then
 		return x:neg():add(other:neg()):neg()
 	end
@@ -660,7 +621,6 @@ end
 function Big:sub(other)
 	local x = self
 	other = Big:ensure_big(other)
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(x+"-"+other);
 	if x.sign == -1 then
 		return x:neg():sub(other:neg()):neg()
 	end
@@ -771,7 +731,6 @@ end
 function Big:mul(other)
 	local x = self
 	other = Big:ensure_big(other)
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(x+"*"+other);
 	if x.sign * other.sign == -1 then
 		return x:abs():mul(other:abs()):neg()
 	end
@@ -822,7 +781,6 @@ end
 
 function Big:log10()
 	local x = self
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log("log"+this);
 	if x:lt(B.ZERO) then
 		return Big:new(B.NaN)
 	end
@@ -850,7 +808,6 @@ end
 
 function Big:pow(other)
 	other = Big:ensure_big(other)
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(this+"^"+other);
 	if other:eq(B.ZERO) then
 		return Big:new(B.ONE)
 	end
@@ -867,7 +824,6 @@ function Big:pow(other)
 		return self:abs():pow(other):neg()
 	end
 	if self:lt(B.ZERO) then
-		--return Big:new(B.NaN)
 		--Override this interaction to always make positive numbers
 		return self:abs():pow(other)
 	end
@@ -906,7 +862,6 @@ end
 
 function Big:root(other)
 	other = Big:ensure_big(other)
-	-- if (OmegaNum.debug>=OmegaNum.NORMAL) console.log(this+"root"+other);
 	if other:eq(B.ONE) then
 		return self:clone()
 	end
@@ -1131,9 +1086,6 @@ function Big:arrow(arrows, other)
 	if other:eq(B.ONE) then
 		return t:clone()
 	end
-	--[[if (arrows:gte(maxArrow)) then
-        return Big:new(B.POSITIVE_INFINITY)
-    end--]]
 	local arrowsNum = arrows:to_number()
 	if other:eq(2) then
 		return t:arrow(arrows:sub(B.ONE), t)
@@ -1370,7 +1322,6 @@ end
 -- These functions are kept for backwards compatibility for now
 -- but will be deprecated soon
 
--- The main creation method is now Big:new, which handles all input types
 function AThousandNotation(n, places)
 	return a_thousand_notation(n, places)
 end
