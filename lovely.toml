@@ -879,27 +879,27 @@ elseif eval_type == 'hyper_chips' then
 elseif eval_type == 'e_mult' then 
 	sound = 'talisman_emult'
 	amt = amt
-	text = '^' .. amt .. ' Mult'
+	text = '^' .. amt .. ' ' .. localize('k_mult')
 	colour = G.C.MULT
 	config.type = 'fade'
 	config.scale = 0.7
 elseif eval_type == 'ee_mult' then 
 	sound = 'talisman_eemult'
 	amt = amt
-	text = '^^' .. amt .. ' Mult'
+	text = '^^' .. amt .. ' ' .. localize('k_mult')
 	colour = G.C.MULT
 	config.type = 'fade'
 	config.scale = 0.7
 elseif eval_type == 'eee_mult' then 
 	sound = 'talisman_eeemult'
 	amt = amt
-	text = '^^^' .. amt .. ' Mult'
+	text = '^^^' .. amt .. ' ' .. localize('k_mult')
 	colour = G.C.MULT
 	config.type = 'fade'
 	config.scale = 0.7
 elseif eval_type == 'hyper_mult' then 
 	sound = 'talisman_eeemult'
-	text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2]) .. ' Mult'
+	text = (amt[1] > 5 and ('{' .. tostring(amt[1]) .. '}') or string.rep('^', amt[1])) .. tostring(amt[2]) .. ' ' .. localize('k_mult')
 	amt = amt[2]
 	colour = G.C.MULT
 	config.type = 'fade'
@@ -1108,7 +1108,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		mult = mod_mult(mult ^ edi.e_mult)
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^'.. edi.e_mult ..' Mult',
+		{message = '^'.. edi.e_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		e_mult = true})
 	end
@@ -1116,7 +1116,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		mult = mod_mult(mult:arrow(2, edi.ee_mult))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^'.. edi.ee_mult ..' Mult',
+		{message = '^^'.. edi.ee_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		ee_mult = true})
 	end
@@ -1124,7 +1124,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		mult = mod_mult(mult:arrow(3, edi.eee_mult))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^^'.. edi.eee_mult ..' Mult',
+		{message = '^^^'.. edi.eee_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		eee_mult = true})
 	end
@@ -1132,7 +1132,7 @@ if scoring_hand and scoring_hand[i] and scoring_hand[i].edition then
 		mult = mod_mult(mult:arrow(edi.hyper_mult[1], edi.hyper_mult[2]))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = (edi.hyper_mult[1] > 5 and ('{' .. edi.hyper_mult[1] .. '}') or string.rep('^', edi.hyper_mult[1])) .. edi.hyper_mult[2] ..' Mult',
+		{message = (edi.hyper_mult[1] > 5 and ('{' .. edi.hyper_mult[1] .. '}') or string.rep('^', edi.hyper_mult[1])) .. edi.hyper_mult[2] ..' ' .. localize('k_mult'),
 		edition = true,
 		hyper_mult = true})
 	end
@@ -1203,7 +1203,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		mult = mod_mult(mult ^ edi.e_mult)
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^'.. edi.e_mult ..' Mult',
+		{message = '^'.. edi.e_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		e_mult = true})
 	end
@@ -1211,7 +1211,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		mult = mod_mult(mult:arrow(2, edi.ee_mult))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^'.. edi.ee_mult ..' Mult',
+		{message = '^^'.. edi.ee_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		ee_mult = true})
 	end
@@ -1219,7 +1219,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		mult = mod_mult(mult:arrow(3, edi.eee_mult))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = '^^^'.. edi.eee_mult ..' Mult',
+		{message = '^^^'.. edi.eee_mult ..' ' .. localize('k_mult'),
 		edition = true,
 		eee_mult = true})
 	end
@@ -1227,7 +1227,7 @@ if G.jokers.cards and G.jokers.cards[i] and G.jokers.cards[i].edition then
 		mult = mod_mult(mult:arrow(edi.hyper_mult[1], edi.hyper_mult[2]))
 		update_hand_text({delay = 0}, {mult = mult})
 		card_eval_status_text(trg, 'extra', nil, percent, nil,
-		{message = (edi.hyper_mult[1] > 5 and ('{' .. edi.hyper_mult[1] .. '}') or string.rep('^', edi.hyper_mult[1])) .. edi.hyper_mult[2] ..' Mult',
+		{message = (edi.hyper_mult[1] > 5 and ('{' .. edi.hyper_mult[1] .. '}') or string.rep('^', edi.hyper_mult[1])) .. edi.hyper_mult[2] ..' ' .. localize('k_mult'),
 		edition = true,
 		hyper_mult = true})
 	end
