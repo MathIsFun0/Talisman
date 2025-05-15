@@ -46,6 +46,9 @@ R.TETRATED_MAX_SAFE_INTEGER = "10^^" .. tostring(R.MAX_SAFE_INTEGER)
 -- this will be populated with bignum equivalents of R's values at the end of the file
 B = {}
 
+-- this will be populated with bignum equivalents of R's values at the end of the file
+B = {}
+
 --------------make the numbers look good----------------------
 function thousands_format(number)
 	return string.format("%.2f", number)
@@ -100,6 +103,7 @@ end
 function Big:is_finite()
 	return (not self:is_infinite() and not self:is_nan())
 end
+
 
 function Big:is_int()
 	if self.sign == -1 then
@@ -506,6 +510,7 @@ function Big:parse(input)
 	end
 	x:normalize()
 	return x
+
 end
 
 function Big:to_number()
@@ -564,6 +569,14 @@ function Big:ensure_big(input)
 	else
 		return Big:new(input)
 	end
+end
+
+function Big:ensureBig(input)
+    if ((type(input) == "table") and getmetatable(input) == OmegaMeta) then
+        return input
+    else
+        return Big:create(input)
+    end
 end
 
 function Big:add(other)
@@ -1061,6 +1074,32 @@ function Big:tetrate(other)
 	return r
 end
 
+function Big:max_for_op(arrows)
+    if type(arrows) == "table" then
+        arrows = arrows:to_number()
+    end
+    if arrows < 1 or arrows ~= arrows or arrows == R.POSITIVE_INFINITY then
+        return B.NaN:clone()
+    end
+    if arrows == 1 then
+        return B.E_MAX_SAFE_INTEGER:clone()
+    end
+    if arrows == 2 then
+        return B.TETRATED_MAX_SAFE_INTEGER:clone()
+    end
+
+    local arr = {}
+    arr[1] = 10e9
+    arr[arrows] = R.MAX_SAFE_INTEGER - 2
+    for i = 2, arrows - 1 do
+        arr[i] = 8
+    end
+
+    local res = Big:new({0})
+    res.array = arr
+    return res
+end
+
 function Big:arrow(arrows, other)
 	local t = self
 	arrows = Big:ensure_big(arrows)
@@ -1259,6 +1298,31 @@ function OmegaMeta.__div(b1, b2)
 		return Big:new(b1):div(b2)
 	end
 	return b1:div(b2)
+    if type(b1) == "number" then
+        return Big:create(b1):add(b2)
+    end
+    return b1:add(b2)
+end
+
+function OmegaMeta.__sub(b1, b2)
+    if type(b1) == "number" then
+        return Big:create(b1):sub(b2)
+    end
+    return b1:sub(b2)
+end
+
+function OmegaMeta.__mul(b1, b2)
+    if type(b1) == "number" then
+        return Big:create(b1):mul(b2)
+    end
+    return b1:mul(b2)
+end
+
+function OmegaMeta.__div(b1, b2)
+    if type(b1) == "number" then
+        return Big:create(b1):div(b2)
+    end
+    return b1:div(b2)
 end
 function OmegaMeta.__mod(b1, b2)
 	if type(b1) == "number" then
@@ -1301,6 +1365,35 @@ end
 function OmegaMeta.__eq(b1, b2)
 	b1 = Big:ensure_big(b1)
 	return b1:eq(b2)
+    if type(b1) == "number" then
+        return Big:ensureBig(b1):pow(b2)
+    end
+    return b1:pow(b2)
+end
+
+function OmegaMeta.__le(b1, b2)
+    b1 = Big:ensureBig(b1)
+    return b1:lte(b2)
+end
+
+function OmegaMeta.__lt(b1, b2)
+    b1 = Big:ensureBig(b1)
+    return b1:lt(b2)
+end
+
+function OmegaMeta.__ge(b1, b2)
+    b1 = Big:ensureBig(b1)
+    return b1:gte(b2)
+end
+
+function OmegaMeta.__gt(b1, b2)
+    b1 = Big:ensureBig(b1)
+    return b1:gt(b2)
+end
+
+function OmegaMeta.__eq(b1, b2)
+    b1 = Big:ensureBig(b1)
+    return b1:eq(b2)
 end
 
 function OmegaMeta.__tostring(b)
@@ -1321,6 +1414,11 @@ end
 -- Compat layer
 -- These functions are kept for backwards compatibility for now
 -- but will be deprecated soon
+for i,v in pairs(R) do
+    B[i] = Big:ensureBig(v)
+end
+
+return Big
 
 function AThousandNotation(n, places)
 	return a_thousand_notation(n, places)
