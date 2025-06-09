@@ -573,6 +573,16 @@ position = "at"
 payload = '''self:change_size(to_big(self.config.last_poll_size - math.floor(G.GAME.dollars/G.GAME.modifiers.minus_hand_size_per_X_dollar)):to_number())'''
 match_indent = true
 
+# Current Round Interest Cap Streak 
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''if G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5) == G.GAME.interest_amount*G.GAME.interest_cap/5 then'''
+position = "at"
+payload = '''
+if to_big(G.GAME.interest_amount*math.min(math.floor(G.GAME.dollars/5), G.GAME.interest_cap/5)) == to_big(G.GAME.interest_amount*G.GAME.interest_cap/5) then'''
+match_indent = true
+
 # for now, I'm letting dollar eval ignore bignum, I'll patch it later
 [[patches]]
 [patches.pattern]
