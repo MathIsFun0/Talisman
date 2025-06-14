@@ -457,6 +457,18 @@ function to_number(x)
   end
 end
 
+function uncompress_big(str, sign)
+    local curr = 1
+    local array = {}
+    for i, v in pairs(str) do
+        for i2 = 1, v[2] do
+            array[curr] = v[1]
+            curr = curr + 1
+        end
+    end
+    return to_big(array, y)
+end
+
 --patch to remove animations
 local cest = card_eval_status_text
 function card_eval_status_text(a,b,c,d,e,f)
@@ -820,7 +832,7 @@ local su = G.start_up
 function safe_str_unpack(str)
   local chunk, err = loadstring(str)
   if chunk then
-    setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big, inf = 1.79769e308})  -- Use an empty environment to prevent access to potentially harmful functions
+    setfenv(chunk, {Big = Big, BigMeta = BigMeta, OmegaMeta = OmegaMeta, to_big = to_big, inf = 1.79769e308, uncompress_big=uncompress_big})  -- Use an empty environment to prevent access to potentially harmful functions
     local success, result = pcall(chunk)
     if success then
     return result

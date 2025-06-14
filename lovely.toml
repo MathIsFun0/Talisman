@@ -274,12 +274,29 @@ payload = '''
 if v.m and v.e then
 v = "to_big("..v.m..","..v.e..")"
 elseif v.array and v.sign then
-	local v0 = "to_big({"
-	for qi = 1,#v.array do
-		v0 = v0 .. v.array[qi] .. ", "
+	if #v.array > 20 then
+		local last = v.array[1]
+		local running = 1
+		local v0 = "uncompress_big({"
+		for qi = 2,#v.array do
+			if last ~= v.array[qi] then
+				v0 = v0 .. "{"..last..","..running.."}" .. ", "
+				last = v.array[qi]
+		running = 1
+			else running = running + 1 end
+		end
+		v0 = v0 .. "{"..v.array[#v.array]..",1}"
+		v0 = v0 .. "},"..v.sign..")"
+		v = v0
+	else
+		--this is smaller if the number is small enough
+		local v0 = "to_big({"
+		for qi = 1,#v.array do
+			v0 = v0 .. v.array[qi] .. ", "
+		end
+		v0 = v0 .. "},"..v.sign..")"
+		v = v0
 	end
-	v0 = v0 .. "},"..v.sign..")"
-	v = v0
 '''
 match_indent = true
 overwrite = false
