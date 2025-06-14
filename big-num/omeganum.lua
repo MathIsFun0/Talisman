@@ -1163,7 +1163,7 @@ function Big:arrow(arrows, other)
         return t:max(other)
     end
     local r = nil
-    if (t:gt(limit) or other:gt(B.MAX_SAFE_INTEGER)) then
+    if (t:gt(limit) or other:gt(B.MAX_SAFE_INTEGER)) or arrows >= Big:ensureBig(350) then
         if (t:gt(limit)) then
             r = t:clone()
             r.array[arrowsNum + 1] = r.array[arrowsNum + 1] - 1
@@ -1389,4 +1389,5 @@ for i,v in pairs(R) do
 end
 
 return Big
+
 
